@@ -12,9 +12,10 @@ export interface HoverCharsProps {
   charClassName?: string;
   stagger?: number;
   duration?: number;
-  /** Bump this on each hover start to (re)play the reveal; the end state
-   * persists after the pointer leaves instead of reverting. */
-  hoverKey?: number;
+  /** Reveals the characters when true, hides them again when false. Driven
+   * by animate/transition props only (no remounting), so the DOM nodes stay
+   * stable and clicks on the text never get dropped mid-gesture. */
+  isHovered: boolean;
 }
 
 export function HoverChars({
@@ -23,39 +24,45 @@ export function HoverChars({
   charClassName = "",
   stagger = 0.02,
   duration = 0.5,
-  hoverKey = 0,
+  isHovered,
 }: HoverCharsProps) {
   const chars = [...text].map((char) => (char === " " ? " " : char));
-  const isHovered = hoverKey > 0;
 
   return (
-    <span key={hoverKey} className={`relative inline-flex ${className}`}>
-      {chars.map((char, i) => (
-        <span
-          key={i}
-          className={`relative inline-flex overflow-hidden ${charClassName}`}
-        >
-          {/* Invisible spacer: gives the box its real height so the layers below translate by a full slot. */}
-          <span className="invisible">{char}</span>
-          <motion.span
-            className="absolute inset-0 flex items-center justify-center"
-            initial={{ y: "0%", opacity: 1 }}
-            animate={isHovered ? { y: "-100%", opacity: 0 } : undefined}
-            transition={{ duration, delay: i * stagger, ease: EASE_POWER3_OUT }}
+    <span className={`relative inline-flex ${className}`}>
+      {chars.map((char, i) => {
+        const transition = isHovered
+          ? { duration, delay: i * stagger, ease: EASE_POWER3_OUT }
+          : { duration: 0 };
+        return (
+          <span
+            key={i}
+            className={`relative inline-flex overflow-hidden ${charClassName}`}
           >
-            {char}
-          </motion.span>
-          <motion.span
-            aria-hidden="true"
-            className="absolute left-0 right-0 top-full h-full flex items-center justify-center"
-            initial={{ y: "0%", opacity: 0 }}
-            animate={isHovered ? { y: "-100%", opacity: 1 } : undefined}
-            transition={{ duration, delay: i * stagger, ease: EASE_POWER3_OUT }}
-          >
-            {char}
-          </motion.span>
-        </span>
-      ))}
+            {/* Invisible spacer: gives the box its real height so the layers below translate by a full slot. */}
+            <span className="invisible">{char}</span>
+            <motion.span
+              className="absolute inset-0 flex items-center justify-center"
+              animate={
+                isHovered ? { y: "-100%", opacity: 0 } : { y: "0%", opacity: 1 }
+              }
+              transition={transition}
+            >
+              {char}
+            </motion.span>
+            <motion.span
+              aria-hidden="true"
+              className="absolute left-0 right-0 top-full h-full flex items-center justify-center"
+              animate={
+                isHovered ? { y: "-100%", opacity: 1 } : { y: "0%", opacity: 0 }
+              }
+              transition={transition}
+            >
+              {char}
+            </motion.span>
+          </span>
+        );
+      })}
     </span>
   );
 }

@@ -51,7 +51,8 @@ export const projects: Project[] = [
   {
     slug: "naya",
     title: "Naya",
-    duration: "À définir",
+    projectKind: "personnel",
+    duration: "6 mois",
     tags: [
       "UX Research",
       "Direction Artistique",
@@ -64,7 +65,7 @@ export const projects: Project[] = [
     title: "ACPR",
     tagline: "Outil de réclamation pour assureurs — projet d'alternance OS",
     projectKind: "professionnel",
-    duration: "À définir",
+    duration: "En cours",
     tags: [
       "UX/UI Design",
       "Prototypage & Vibe coding",
@@ -75,14 +76,14 @@ export const projects: Project[] = [
     slug: "design-system-os",
     title: "Design System OS",
     projectKind: "professionnel",
-    duration: "À définir",
+    duration: "En cours",
     tags: ["Design System", "Design Tokens", "Figma"],
   },
   {
     slug: "voyage",
     title: "Voyage",
     projectKind: "personnel",
-    duration: "6 mois",
+    duration: "2 mois",
     tags: ["Direction Artistique", "UI Design", "Prototypage"],
   },
 ];

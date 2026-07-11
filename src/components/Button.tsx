@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import type { ButtonHTMLAttributes } from "react";
 import { HoverChars } from "./HoverChars";
 import { Squircle } from "./Squircle";
+import { useHoverReplay } from "../hooks/useHoverReplay";
 
 type NativeButtonProps = Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
@@ -36,8 +36,7 @@ export function Button({
   cornerSmoothing = 1,
   ...props
 }: ButtonProps) {
-  const [hoverKey, setHoverKey] = useState(0);
-  const replay = () => setHoverKey((key) => key + 1);
+  const { isHovered, trigger } = useHoverReplay();
 
   return (
     <Squircle
@@ -50,15 +49,15 @@ export function Button({
     >
       <motion.button
         type="button"
-        onHoverStart={replay}
-        onFocus={replay}
+        onHoverStart={trigger}
+        onFocus={trigger}
         className={`relative inline-flex overflow-hidden font-medium ${className}`}
         {...props}
       >
         <HoverChars
           text={children}
           charClassName={charClassName}
-          hoverKey={hoverKey}
+          isHovered={isHovered}
         />
       </motion.button>
     </Squircle>

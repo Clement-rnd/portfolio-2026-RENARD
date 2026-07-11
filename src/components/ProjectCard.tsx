@@ -43,11 +43,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
       <div className="flex flex-col items-start gap-4">
         <div className="flex flex-col items-start gap-1">
-          <h4 className="font-casta text-[1.75rem] font-light leading-none text-heading">
+          <h4 className="font-casta text-[1.75rem] font-medium leading-none text-heading">
             {project.title}
           </h4>
           {(project.projectKind || project.duration) && (
-            <p className="flex items-center gap-2 text-body">
+            <p className="flex items-center gap-2 text-lg font-medium text-body">
               {project.projectKind && (
                 <span>{PROJECT_KIND_LABEL[project.projectKind]}</span>
               )}
@@ -66,7 +66,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 borderColor="var(--color-body)"
                 fill="none"
               >
-                <span className="inline-flex items-center px-3.5 py-1.5 text-sm leading-none text-body">
+                <span className="inline-flex items-center px-3.5 py-1.5 text-base font-medium leading-none text-body">
                   {tag}
                 </span>
               </Squircle>

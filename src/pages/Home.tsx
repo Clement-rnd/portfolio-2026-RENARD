@@ -119,17 +119,18 @@ export function Home() {
     target: projectsSectionRef,
     offset: ["start end", "end start"],
   });
-  // The left column (projects 0-1) and right column (projects 2-3) drift in
-  // opposite directions as you scroll, so they shift out of sync instead of
-  // scrolling as a flat grid.
+  // The left column (odd project index) and right column (even project
+  // index) drift in opposite directions as you scroll, so they shift out of
+  // sync instead of scrolling as a flat grid.
   const projectsColumnAY = useTransform(projectsScrollProgress, [0, 1], [120, -120]);
   const projectsColumnBY = useTransform(projectsScrollProgress, [0, 1], [-120, 120]);
 
-  // Matches the named grid-template-areas from the reference design: "Area"
-  // and "Area-2" sit at the top of the grid (visible on load), "Area-3" and
-  // "Area-4" sit lower (revealed on scroll). Desktop additionally shifts
-  // "Area-3"/"Area-4" one column to the right of their column-mate.
-  const PROJECT_GRID_AREAS = ["Area", "Area-3", "Area-2", "Area-4"];
+  // Reading order goes by vertical position (topmost first), not left/right
+  // column: Naya > ACPR > Design System OS > Voyage. "Area-2" and "Area" sit
+  // at the top of the grid (visible on load), "Area-4" and "Area-3" sit
+  // lower (revealed on scroll). Desktop additionally shifts "Area-3"/"Area-4"
+  // one column to the right of their column-mate.
+  const PROJECT_GRID_AREAS = ["Area-2", "Area", "Area-4", "Area-3"];
 
   const aboutTextRef = useRef(null);
   const isAboutTextInView = useInView(aboutTextRef, {
@@ -148,7 +149,7 @@ export function Home() {
       <section className="mx-auto flex min-h-screen max-w-[96rem] flex-col justify-end gap-12 px-4 pb-[33vh] md:px-6 lg:justify-center lg:gap-8 lg:pb-0">
         <div className="hidden lg:flex lg:max-w-2xl lg:flex-col lg:items-start lg:gap-8">
           <div className="flex flex-col gap-4">
-            <div className="font-satoshi text-[clamp(2.5rem,5vw,4.5rem)] font-bold leading-[1.1] tracking-[-0.02em] text-heading">
+            <div className="font-casta text-[clamp(2.5rem,5vw,4.5rem)] font-medium leading-[1.1] text-heading">
               <RevealChars
                 text={HERO_TITLE_LINE_1}
                 trigger={true}
@@ -182,7 +183,7 @@ export function Home() {
             className="flex gap-[10px]"
           >
             <Button
-              className="px-5 text-base text-white"
+              className="px-5 text-lg text-white"
               charClassName="py-2"
               fill="var(--color-heading)"
               cornerRadius={8}
@@ -193,7 +194,7 @@ export function Home() {
               Me contacter
             </Button>
             <Button
-              className="px-5 text-base text-heading"
+              className="px-5 text-lg text-heading"
               charClassName="py-2"
               cornerRadius={8}
               onClick={() => {
@@ -207,7 +208,7 @@ export function Home() {
 
         <div className="flex flex-col gap-12 lg:hidden">
           <div className="flex flex-col gap-3 leading-[1.4]">
-            <div className="font-satoshi text-[28px] font-bold tracking-[-0.28px] text-heading">
+            <div className="font-casta text-[28px] font-medium text-heading">
               <RevealChars
                 text={HERO_TITLE_LINE_1}
                 trigger={true}
@@ -242,7 +243,7 @@ export function Home() {
           >
             <Button
               wrapperClassName="flex-1 md:flex-none"
-              className="w-full justify-center px-4 text-sm text-white md:w-auto"
+              className="w-full justify-center px-4 text-base text-white md:w-auto"
               charClassName="py-2"
               fill="var(--color-heading)"
               cornerRadius={8}
@@ -254,7 +255,7 @@ export function Home() {
             </Button>
             <Button
               wrapperClassName="flex-1 md:flex-none"
-              className="w-full justify-center px-4 text-sm text-heading md:w-auto"
+              className="w-full justify-center px-4 text-base text-heading md:w-auto"
               charClassName="py-2"
               cornerRadius={8}
               onClick={() => {
@@ -324,10 +325,10 @@ export function Home() {
               key={project.slug}
               style={{
                 gridArea: PROJECT_GRID_AREAS[index],
-                y: index < 2 ? projectsColumnAY : projectsColumnBY,
+                y: index % 2 === 1 ? projectsColumnAY : projectsColumnBY,
               }}
             >
-              {index === 0 || index === 2 ? (
+              {index < 2 ? (
                 <motion.div
                   {...useEntranceReveal({
                     delay: HERO_PROJECTS_DELAY,
@@ -374,10 +375,10 @@ export function Home() {
               key={project.slug}
               style={{
                 gridArea: PROJECT_GRID_AREAS[index],
-                y: index < 2 ? projectsColumnAY : projectsColumnBY,
+                y: index % 2 === 1 ? projectsColumnAY : projectsColumnBY,
               }}
             >
-              {index === 0 || index === 2 ? (
+              {index < 2 ? (
                 <motion.div
                   {...useEntranceReveal({
                     delay: HERO_PROJECTS_DELAY,

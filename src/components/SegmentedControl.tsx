@@ -34,7 +34,7 @@ export function SegmentedControl({
     <Squircle
       cornerRadius={TRACK_CORNER_RADIUS}
       cornerSmoothing={1}
-      fill="var(--color-neutral-100)"
+      fill="#E8E8EA"
       borderWidth={0}
       className={`inline-flex ${className}`}
     >

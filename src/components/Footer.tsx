@@ -23,7 +23,7 @@ export function Footer() {
       className="mx-auto flex max-w-[96rem] flex-col gap-8 bg-background px-4 py-12 md:px-6 md:py-24"
     >
       <motion.div {...revealProps(0)} className="flex justify-end">
-        <Button className="text-sm text-heading" onClick={() => scrollToTop()}>
+        <Button className="text-base text-heading" onClick={() => scrollToTop()}>
           Retour en haut
         </Button>
       </motion.div>

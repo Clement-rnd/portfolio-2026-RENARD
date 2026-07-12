@@ -121,7 +121,7 @@ export function Nav() {
                 <AnimatedLink
                   scrollToAnchor={link.id}
                   scrollOffset={link.offset}
-                  className={`rounded-lg px-4 text-sm font-medium ${VARIANT_CLASSES[link.variant]}`}
+                  className={`rounded-lg px-4 text-base font-medium ${VARIANT_CLASSES[link.variant]}`}
                   charClassName="py-2"
                 >
                   {link.label}

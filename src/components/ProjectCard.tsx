@@ -43,9 +43,17 @@ export function ProjectCard({ project }: ProjectCardProps) {
             />
           ))}
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="scale-90 rounded-full bg-black/40 px-5 py-2.5 text-sm font-medium text-white opacity-0 transition-all duration-300 ease-out group-hover:scale-100 group-hover:opacity-100">
-            Coming soon
-          </span>
+          <Squircle
+            cornerRadius={8}
+            cornerSmoothing={1}
+            fill="var(--color-heading)"
+            borderWidth={0}
+            className="scale-90 opacity-0 transition-all duration-300 ease-out group-hover:scale-100 group-hover:opacity-100"
+          >
+            <span className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-white">
+              Coming soon...
+            </span>
+          </Squircle>
         </div>
       </div>
 

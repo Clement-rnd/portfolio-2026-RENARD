@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 import { motion } from "framer-motion";
+import { EXIT_DISTANCE, EXIT_DURATION } from "../lib/exitTransition";
 
 // Approximation of GSAP's "power3.out" easing curve.
 const EASE_POWER3_OUT = [0.215, 0.61, 0.355, 1] as const;
@@ -7,12 +8,19 @@ const EASE_POWER3_OUT = [0.215, 0.61, 0.355, 1] as const;
 const charVariants = {
   hidden: { opacity: 0, y: 24 },
   visible: { opacity: 1, y: 0 },
+  exiting: { opacity: 0, y: -EXIT_DISTANCE },
 };
 
 export interface RevealCharsProps {
   text: string;
   /** Reveals the characters when true, hides them again when false. */
   trigger: boolean;
+  /** Plays the exit variant (fade + move up), char by char, regardless of
+   * `trigger` — used when the page itself is navigating away. */
+  exiting?: boolean;
+  /** Base delay (s) before this element's exit starts — e.g. a per-section
+   * offset so sections leave top-to-bottom. */
+  exitDelay?: number;
   className?: string;
   charClassName?: string;
   /** Base delay (s) before the first character starts revealing. */
@@ -25,6 +33,8 @@ export interface RevealCharsProps {
 export function RevealChars({
   text,
   trigger,
+  exiting = false,
+  exitDelay = 0,
   className = "",
   charClassName = "",
   delay = 0,
@@ -47,10 +57,12 @@ export function RevealChars({
                   className={`inline-block ${charClassName}`}
                   variants={charVariants}
                   initial="hidden"
-                  animate={trigger ? "visible" : "hidden"}
+                  animate={exiting ? "exiting" : trigger ? "visible" : "hidden"}
                   transition={{
-                    duration,
-                    delay: delay + index * stagger,
+                    duration: exiting ? EXIT_DURATION : duration,
+                    delay: exiting
+                      ? exitDelay + index * stagger
+                      : delay + index * stagger,
                     ease: EASE_POWER3_OUT,
                   }}
                 >

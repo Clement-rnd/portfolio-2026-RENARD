@@ -1,49 +1,41 @@
-import { useCallback, useState } from "react";
-import { motion } from "framer-motion";
-import { Outlet, useNavigate } from "react-router-dom";
+import { startTransition, useCallback, useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Nav } from "./Nav";
 import { Footer } from "./Footer";
 import { PageTransitionContext } from "../lib/PageTransitionContext";
-
-// Mirrors the site's usual entrance reveal (fade + move up into place) in
-// reverse: fade out while moving up the same distance, then a short pause,
-// then the actual navigation — so the new page's own entrance sequence
-// starts on a clean, empty page instead of overlapping the old one.
-const EXIT_DURATION = 0.4;
-const EXIT_DISTANCE = 40;
-const WAIT_AFTER_EXIT = 0.25;
+import { TOTAL_EXIT_DURATION, WAIT_AFTER_EXIT } from "../lib/exitTransition";
 
 export function Layout() {
   const [isExiting, setIsExiting] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const navigateWithExit = useCallback(
     (href: string) => {
       setIsExiting(true);
       setTimeout(
         () => {
-          navigate(href);
-          setIsExiting(false);
+          // react-router wraps its own navigation state update in
+          // startTransition. If our setIsExiting(false) weren't in the same
+          // transition, it (a plain sync update) could commit before the
+          // transition-priority route change lands — briefly un-exiting the
+          // OLD page and replaying its entrance animation before it actually
+          // unmounts.
+          startTransition(() => {
+            navigate(href);
+            setIsExiting(false);
+          });
         },
-        (EXIT_DURATION + WAIT_AFTER_EXIT) * 1000,
+        (TOTAL_EXIT_DURATION + WAIT_AFTER_EXIT) * 1000,
       );
     },
     [navigate],
   );
 
   return (
-    <PageTransitionContext.Provider value={{ navigateWithExit }}>
+    <PageTransitionContext.Provider value={{ navigateWithExit, isExiting }}>
       <Nav />
-      <motion.div
-        animate={
-          isExiting
-            ? { opacity: 0, y: -EXIT_DISTANCE }
-            : { opacity: 1, y: 0 }
-        }
-        transition={{ duration: EXIT_DURATION, ease: "easeOut" }}
-      >
-        <Outlet />
-      </motion.div>
+      <Outlet key={location.key} />
       <Footer />
     </PageTransitionContext.Provider>
   );

@@ -1,5 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { Fragment, useMemo, useRef } from "react";
+import { EXIT_DURATION } from "../lib/exitTransition";
 
 // Approximation of GSAP's "power3.out" easing curve.
 const EASE_POWER3_OUT = [0.215, 0.61, 0.355, 1] as const;
@@ -29,6 +30,13 @@ export interface AnimatedHeadingProps {
   once?: boolean;
   /** Fraction of the element that must be visible to trigger the reveal. */
   amount?: number;
+  /** Plays the exit variant (slides up out of its mask), char by char,
+   * regardless of viewport state — used when the page itself is navigating
+   * away. */
+  exiting?: boolean;
+  /** Base delay (s) before this element's exit starts — e.g. a per-section
+   * offset so sections leave top-to-bottom. */
+  exitDelay?: number;
 }
 
 export function AnimatedHeading({
@@ -41,6 +49,8 @@ export function AnimatedHeading({
   duration = 0.8,
   once = true,
   amount = 0.5,
+  exiting = false,
+  exitDelay = 0,
 }: AnimatedHeadingProps) {
   const words = useMemo(() => text.split(" "), [text]);
   const MotionTag = MOTION_TAGS[as];
@@ -69,10 +79,18 @@ export function AnimatedHeading({
                   <motion.span
                     className={`inline-block ${charClassName}`}
                     initial={{ y: "100%" }}
-                    animate={isInView ? { y: "0%" } : undefined}
+                    animate={
+                      exiting
+                        ? { y: "-100%" }
+                        : isInView
+                          ? { y: "0%" }
+                          : undefined
+                    }
                     transition={{
-                      duration,
-                      delay: delay + index * stagger,
+                      duration: exiting ? EXIT_DURATION : duration,
+                      delay: exiting
+                        ? exitDelay + index * stagger
+                        : delay + index * stagger,
                       ease: EASE_POWER3_OUT,
                     }}
                   >

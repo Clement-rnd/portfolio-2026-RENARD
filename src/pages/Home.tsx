@@ -12,6 +12,12 @@ import { processSteps } from "../data/process";
 import { projects } from "../data/projects";
 import { useEntranceReveal } from "../hooks/useEntranceReveal";
 import { useScrollReveal } from "../hooks/useScrollReveal";
+import { usePageTransition } from "../lib/PageTransitionContext";
+import {
+  EXIT_DISTANCE,
+  EXIT_DURATION,
+  exitSectionDelay,
+} from "../lib/exitTransition";
 import {
   HERO_BUTTONS_DELAY,
   HERO_PARAGRAPH_DELAY,
@@ -114,6 +120,11 @@ const ABOUT_TOGGLE_DELAYS: number[] = [];
 }
 
 export function Home() {
+  const { isExiting } = usePageTransition();
+  const HERO_EXIT_DELAY = exitSectionDelay("hero");
+  const PROJECTS_EXIT_DELAY = exitSectionDelay("projects");
+  const ABOUT_EXIT_DELAY = exitSectionDelay("about");
+  const PROCESS_EXIT_DELAY = exitSectionDelay("process");
   const projectsSectionRef = useRef(null);
   const { scrollYProgress: projectsScrollProgress } = useScroll({
     target: projectsSectionRef,
@@ -153,6 +164,8 @@ export function Home() {
               <RevealChars
                 text={HERO_TITLE_LINE_1}
                 trigger={true}
+                exiting={isExiting}
+                exitDelay={HERO_EXIT_DELAY}
                 delay={0}
                 stagger={HERO_TITLE_STAGGER}
                 duration={HERO_TITLE_CHAR_DURATION}
@@ -161,6 +174,8 @@ export function Home() {
               <RevealChars
                 text={HERO_TITLE_LINE_2}
                 trigger={true}
+                exiting={isExiting}
+                exitDelay={HERO_EXIT_DELAY}
                 delay={HERO_TITLE_LINE_2_DELAY}
                 stagger={HERO_TITLE_STAGGER}
                 duration={HERO_TITLE_CHAR_DURATION}
@@ -169,6 +184,8 @@ export function Home() {
             <RevealWords
               words={HERO_PARAGRAPH_TEXT}
               trigger={true}
+              exiting={isExiting}
+              exitDelay={HERO_EXIT_DELAY}
               delay={HERO_PARAGRAPH_DELAY}
               stagger={HERO_PARAGRAPH_STAGGER}
               duration={HERO_PARAGRAPH_WORD_DURATION}
@@ -177,6 +194,8 @@ export function Home() {
           </div>
           <motion.div
             {...useEntranceReveal({
+              exiting: isExiting,
+              exitDelay: HERO_EXIT_DELAY,
               delay: HERO_BUTTONS_DELAY,
               duration: HERO_STEP_DURATION,
             })}
@@ -212,6 +231,8 @@ export function Home() {
               <RevealChars
                 text={HERO_TITLE_LINE_1}
                 trigger={true}
+                exiting={isExiting}
+                exitDelay={HERO_EXIT_DELAY}
                 delay={0}
                 stagger={HERO_TITLE_STAGGER}
                 duration={HERO_TITLE_CHAR_DURATION}
@@ -220,6 +241,8 @@ export function Home() {
               <RevealChars
                 text={HERO_TITLE_LINE_2}
                 trigger={true}
+                exiting={isExiting}
+                exitDelay={HERO_EXIT_DELAY}
                 delay={HERO_TITLE_LINE_2_DELAY}
                 stagger={HERO_TITLE_STAGGER}
                 duration={HERO_TITLE_CHAR_DURATION}
@@ -228,6 +251,8 @@ export function Home() {
             <RevealWords
               words={HERO_PARAGRAPH_TEXT}
               trigger={true}
+              exiting={isExiting}
+              exitDelay={HERO_EXIT_DELAY}
               delay={HERO_PARAGRAPH_DELAY}
               stagger={HERO_PARAGRAPH_STAGGER}
               duration={HERO_PARAGRAPH_WORD_DURATION}
@@ -236,6 +261,8 @@ export function Home() {
           </div>
           <motion.div
             {...useEntranceReveal({
+              exiting: isExiting,
+              exitDelay: HERO_EXIT_DELAY,
               delay: HERO_BUTTONS_DELAY,
               duration: HERO_STEP_DURATION,
             })}
@@ -280,6 +307,8 @@ export function Home() {
               <motion.div
                 key={project.slug}
                 {...useEntranceReveal({
+                  exiting: isExiting,
+                  exitDelay: PROJECTS_EXIT_DELAY,
                   delay: HERO_PROJECTS_DELAY,
                   duration: HERO_STEP_DURATION,
                 })}
@@ -289,7 +318,7 @@ export function Home() {
             ) : (
               <motion.div
                 key={project.slug}
-                {...useScrollReveal({ y: 60, duration: 0.6, amount: 0.5 })}
+                {...useScrollReveal({ y: 60, duration: 0.6, amount: 0.5, exiting: isExiting, exitDelay: PROJECTS_EXIT_DELAY })}
               >
                 <ProjectCard project={project} />
               </motion.div>
@@ -331,6 +360,8 @@ export function Home() {
               {index < 2 ? (
                 <motion.div
                   {...useEntranceReveal({
+                    exiting: isExiting,
+                    exitDelay: PROJECTS_EXIT_DELAY,
                     delay: HERO_PROJECTS_DELAY,
                     duration: HERO_STEP_DURATION,
                   })}
@@ -339,7 +370,7 @@ export function Home() {
                 </motion.div>
               ) : (
                 <motion.div
-                  {...useScrollReveal({ y: 60, duration: 0.6, amount: 0.5 })}
+                  {...useScrollReveal({ y: 60, duration: 0.6, amount: 0.5, exiting: isExiting, exitDelay: PROJECTS_EXIT_DELAY })}
                 >
                   <ProjectCard project={project} />
                 </motion.div>
@@ -381,6 +412,8 @@ export function Home() {
               {index < 2 ? (
                 <motion.div
                   {...useEntranceReveal({
+                    exiting: isExiting,
+                    exitDelay: PROJECTS_EXIT_DELAY,
                     delay: HERO_PROJECTS_DELAY,
                     duration: HERO_STEP_DURATION,
                   })}
@@ -389,7 +422,7 @@ export function Home() {
                 </motion.div>
               ) : (
                 <motion.div
-                  {...useScrollReveal({ y: 60, duration: 0.6, amount: 0.5 })}
+                  {...useScrollReveal({ y: 60, duration: 0.6, amount: 0.5, exiting: isExiting, exitDelay: PROJECTS_EXIT_DELAY })}
                 >
                   <ProjectCard project={project} />
                 </motion.div>
@@ -412,18 +445,32 @@ export function Home() {
             as="h2"
             stagger={ABOUT_TITLE_STAGGER}
             duration={ABOUT_TITLE_DURATION}
+            exiting={isExiting}
+            exitDelay={ABOUT_EXIT_DELAY}
             className="font-casta text-4xl font-medium leading-none text-heading [text-box-edge:cap_alphabetic] [text-box-trim:trim-both]"
           />
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={
-              isAboutHeaderInView ? { opacity: 1, y: 0 } : undefined
+              isExiting
+                ? { opacity: 0, y: -EXIT_DISTANCE }
+                : isAboutHeaderInView
+                  ? { opacity: 1, y: 0 }
+                  : undefined
             }
-            transition={{
-              duration: 0.4,
-              delay: ABOUT_CONTROL_DELAY,
-              ease: "easeOut",
-            }}
+            transition={
+              isExiting
+                ? {
+                    duration: EXIT_DURATION,
+                    delay: ABOUT_EXIT_DELAY,
+                    ease: "easeOut",
+                  }
+                : {
+                    duration: 0.4,
+                    delay: ABOUT_CONTROL_DELAY,
+                    ease: "easeOut",
+                  }
+            }
           >
             <SegmentedControl value={aboutMode} onChange={setAboutMode} />
           </motion.div>
@@ -437,6 +484,8 @@ export function Home() {
               key={index}
               words={words}
               trigger={isAboutTextInView}
+              exiting={isExiting}
+              exitDelay={ABOUT_EXIT_DELAY}
               dimEnabled={aboutMode === "tldr"}
               delay={ABOUT_PARAGRAPH_DELAYS[index]}
               stagger={ABOUT_WORD_STAGGER}
@@ -459,6 +508,8 @@ export function Home() {
           as="h2"
           stagger={ABOUT_TITLE_STAGGER}
           duration={ABOUT_TITLE_DURATION}
+          exiting={isExiting}
+          exitDelay={PROCESS_EXIT_DELAY}
           className="font-casta text-4xl font-medium leading-none text-heading [text-box-edge:cap_alphabetic] [text-box-trim:trim-both]"
         />
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -466,6 +517,8 @@ export function Home() {
             <motion.div
               key={step.number}
               {...useScrollReveal({
+                exiting: isExiting,
+                exitDelay: PROCESS_EXIT_DELAY,
                 y: 40,
                 duration: 0.5,
                 delay: index * 0.1,

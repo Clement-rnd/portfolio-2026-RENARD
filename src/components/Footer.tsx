@@ -7,16 +7,27 @@ import { scrollToTop } from "../lib/scroll";
 import { CONTACT_LINKS } from "../data/contact";
 import { projects } from "../data/projects";
 import { useScrollReveal } from "../hooks/useScrollReveal";
+import { usePageTransition } from "../lib/PageTransitionContext";
+import { exitSectionDelay } from "../lib/exitTransition";
 
 const columnTitleClassName = "font-casta text-xl font-medium text-heading";
 const linkClassName = "-mx-2 -my-1 px-2 py-1 text-base font-medium text-body";
 
 const LINE_STAGGER = 0.08;
-
-const revealProps = (index: number) =>
-  useScrollReveal({ y: 16, duration: 0.4, delay: index * LINE_STAGGER, amount: 0.2 });
+const FOOTER_EXIT_DELAY = exitSectionDelay("footer");
 
 export function Footer() {
+  const { isExiting } = usePageTransition();
+  const revealProps = (index: number) =>
+    useScrollReveal({
+      y: 16,
+      duration: 0.4,
+      delay: index * LINE_STAGGER,
+      amount: 0.2,
+      exiting: isExiting,
+      exitDelay: FOOTER_EXIT_DELAY,
+    });
+
   return (
     <footer
       id="contact"

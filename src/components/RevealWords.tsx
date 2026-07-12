@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { EXIT_DISTANCE, EXIT_DURATION } from "../lib/exitTransition";
 
 // Approximation of GSAP's "power3.out" easing curve.
 const EASE_POWER3_OUT = [0.215, 0.61, 0.355, 1] as const;
@@ -25,6 +26,12 @@ export interface RevealWordsProps {
   words: string | RevealWordItem[];
   /** Reveals the words when true, hides them again when false. */
   trigger: boolean;
+  /** Plays the exit variant (fade + move up), word by word, regardless of
+   * `trigger` — used when the page itself is navigating away. */
+  exiting?: boolean;
+  /** Base delay (s) before this element's exit starts — e.g. a per-section
+   * offset so sections leave top-to-bottom. */
+  exitDelay?: number;
   /** Fades `dimmed` words to `dimOpacity`; toggling this (after the initial
    * reveal) replays a fast staggered wave rather than the full reveal stagger. */
   dimEnabled?: boolean;
@@ -53,6 +60,8 @@ export interface RevealWordsProps {
 export function RevealWords({
   words,
   trigger,
+  exiting = false,
+  exitDelay = 0,
   dimEnabled = false,
   dimOpacity = 0.35,
   as = "p",
@@ -92,27 +101,36 @@ export function RevealWords({
   return (
     <Tag className={className}>
       {items.map((item, i) => {
-        const targetOpacity = !trigger
+        const targetOpacity = exiting
           ? 0
-          : dimEnabled && item.dimmed
-            ? dimOpacity
-            : 1;
-        const transition = hasRevealed
+          : !trigger
+            ? 0
+            : dimEnabled && item.dimmed
+              ? dimOpacity
+              : 1;
+        const targetY = exiting ? -EXIT_DISTANCE : trigger ? 0 : 16;
+        const transition = exiting
           ? {
-              duration: toggleDuration,
-              delay: item.dimmed
-                ? toggleDelay + dimmedIndexes[i] * (toggleStagger ?? stagger)
-                : 0,
-              ease: "easeOut" as const,
+              duration: EXIT_DURATION,
+              delay: exitDelay + i * stagger,
+              ease: EASE_POWER3_OUT,
             }
-          : { duration, delay: delay + i * stagger, ease: EASE_POWER3_OUT };
+          : hasRevealed
+            ? {
+                duration: toggleDuration,
+                delay: item.dimmed
+                  ? toggleDelay + dimmedIndexes[i] * (toggleStagger ?? stagger)
+                  : 0,
+                ease: "easeOut" as const,
+              }
+            : { duration, delay: delay + i * stagger, ease: EASE_POWER3_OUT };
 
         return (
           <Fragment key={i}>
             <motion.span
               className={`inline-block ${wordClassName}`}
               initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: targetOpacity, y: trigger ? 0 : 16 }}
+              animate={{ opacity: targetOpacity, y: targetY }}
               transition={transition}
             >
               {item.text}

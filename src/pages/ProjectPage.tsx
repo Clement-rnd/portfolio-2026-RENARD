@@ -5,6 +5,8 @@ import { RevealChars } from "../components/RevealChars";
 import { Squircle } from "../components/Squircle";
 import { projects } from "../data/projects";
 import { useEntranceReveal } from "../hooks/useEntranceReveal";
+import { usePageTransition } from "../lib/PageTransitionContext";
+import { EXIT_SECTION_STAGGER } from "../lib/exitTransition";
 import {
   PROJECT_BASELINE_CHAR_DURATION,
   PROJECT_BASELINE_STAGGER,
@@ -25,6 +27,7 @@ const overviewLabelClassName = "text-sm font-medium text-body";
 const overviewValueClassName = "text-lg font-medium text-heading";
 
 export function ProjectPage() {
+  const { isExiting } = usePageTransition();
   const { slug } = useParams<{ slug: string }>();
   const project = projects.find((p) => p.slug === slug);
 
@@ -42,6 +45,7 @@ export function ProjectPage() {
     baselineText,
     project.title,
   );
+  const COVER_EXIT_DELAY = EXIT_SECTION_STAGGER;
 
   return (
     <main className="mx-auto max-w-[96rem] px-4 md:px-6">
@@ -49,6 +53,7 @@ export function ProjectPage() {
         <RevealChars
           text={project.title}
           trigger={true}
+          exiting={isExiting}
           delay={titleDelay}
           stagger={PROJECT_TITLE_STAGGER}
           duration={PROJECT_TITLE_CHAR_DURATION}
@@ -58,6 +63,7 @@ export function ProjectPage() {
           <RevealChars
             text={baselineText}
             trigger={true}
+            exiting={isExiting}
             delay={baselineDelay}
             stagger={PROJECT_BASELINE_STAGGER}
             duration={PROJECT_BASELINE_CHAR_DURATION}
@@ -68,6 +74,8 @@ export function ProjectPage() {
       <section className="-mt-[232px] pb-12 md:-mt-48">
         <motion.div
           {...useEntranceReveal({
+            exiting: isExiting,
+            exitDelay: COVER_EXIT_DELAY,
             delay: coverDelay,
             duration: PROJECT_COVER_DURATION,
           })}

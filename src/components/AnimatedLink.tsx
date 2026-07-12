@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
 import type { AnchorHTMLAttributes, MouseEvent, ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
 import { AnimatedHeading } from "./AnimatedHeading";
 import { HoverChars } from "./HoverChars";
 import { scrollToId } from "../lib/scroll";
 import { useHoverReplay } from "../hooks/useHoverReplay";
+import { usePageTransition } from "../lib/PageTransitionContext";
 
 type NativeAnchorProps = Omit<
   AnchorHTMLAttributes<HTMLAnchorElement>,
@@ -44,7 +44,7 @@ export function AnimatedLink({
   ...props
 }: AnimatedLinkProps) {
   const { isHovered, trigger } = useHoverReplay();
-  const navigate = useNavigate();
+  const { navigateWithExit } = usePageTransition();
 
   // Internal routes (e.g. /projects/naya) navigate client-side via React
   // Router instead of a full page reload; external/new-tab/download links
@@ -58,7 +58,7 @@ export function AnimatedLink({
       scrollToId(scrollToAnchor, undefined, scrollOffset);
     } else if (isInternalRoute) {
       event.preventDefault();
-      navigate(href!);
+      navigateWithExit(href!);
     }
     onClick?.(event);
   };

@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ExternalLinkIcon } from "@hugeicons/core-free-icons";
 import { AnimatedLink } from "./AnimatedLink";
 import { BurgerIcon } from "./BurgerIcon";
 import { RevealChars } from "./RevealChars";
+import { Squircle } from "./Squircle";
 import { scrollToId } from "../lib/scroll";
 import { useEntranceReveal } from "../hooks/useEntranceReveal";
 import { HERO_NAV_DELAY, HERO_STEP_DURATION } from "../lib/heroSequence";
+import { getProjectSequence } from "../lib/projectPageSequence";
+import { usePageTransition } from "../lib/PageTransitionContext";
 import { CONTACT_LINKS } from "../data/contact";
 import { projects } from "../data/projects";
 import logo from "../assets/images/logo.svg";
@@ -34,7 +37,7 @@ const NAV_LINKS = [
 
 const VARIANT_CLASSES = {
   tertiary: "text-neutral-700",
-  primary: "bg-[var(--color-heading)] text-white",
+  primary: "text-white",
 };
 
 interface MobileMenuSubItem {
@@ -79,7 +82,22 @@ const MOBILE_MENU_GROUPS: MobileMenuGroup[] = [
 
 export function Nav() {
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
+  const { navigateWithExit } = usePageTransition();
+  const { pathname } = useLocation();
+  const { slug } = useParams<{ slug: string }>();
+  // The nav is mounted once at the layout level and persists across client
+  // navigations, so this delay only actually plays out on a fresh mount —
+  // i.e. loading/refreshing directly on a project page — where it should
+  // arrive right after that page's own (shorter) baseline/cover/title
+  // sequence instead of the home page's slower one.
+  const currentProject = projects.find((p) => p.slug === slug);
+  const navDelay =
+    pathname.startsWith("/projects/") && currentProject
+      ? getProjectSequence(
+          currentProject.tagline ?? currentProject.title,
+          currentProject.title,
+        ).navDelay
+      : HERO_NAV_DELAY;
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
@@ -95,7 +113,7 @@ export function Nav() {
 
   const closeAndNavigate = (href: string) => {
     setIsOpen(false);
-    navigate(href);
+    navigateWithExit(href);
   };
 
   // Continuous letter-index across every group title + sub-item, so the
@@ -105,29 +123,57 @@ export function Nav() {
   return (
     <motion.header
       {...useEntranceReveal({
-        delay: HERO_NAV_DELAY,
+        delay: navDelay,
         y: 20,
         duration: HERO_STEP_DURATION,
       })}
       className="relative z-50 mx-auto max-w-[96rem] px-4 pt-4 pb-3 md:px-6"
     >
       <div className="flex items-center justify-between gap-8">
-        <img src={logo} alt="Studio Oni" className="h-9 w-auto" />
+        <Link
+          to="/"
+          onClick={(event) => {
+            event.preventDefault();
+            navigateWithExit("/");
+          }}
+        >
+          <img src={logo} alt="Studio Oni" className="h-9 w-auto" />
+        </Link>
 
         <nav className="hidden lg:block">
           <ul className="flex items-center gap-4">
-            {NAV_LINKS.map((link) => (
-              <li key={link.id}>
-                <AnimatedLink
-                  scrollToAnchor={link.id}
-                  scrollOffset={link.offset}
-                  className={`rounded-lg px-4 text-base font-medium ${VARIANT_CLASSES[link.variant]}`}
-                  charClassName="py-2"
-                >
-                  {link.label}
-                </AnimatedLink>
-              </li>
-            ))}
+            {NAV_LINKS.map((link) =>
+              link.variant === "primary" ? (
+                <li key={link.id}>
+                  <Squircle
+                    cornerRadius={8}
+                    cornerSmoothing={1}
+                    fill="var(--color-heading)"
+                    borderWidth={0}
+                  >
+                    <AnimatedLink
+                      scrollToAnchor={link.id}
+                      scrollOffset={link.offset}
+                      className={`px-4 text-base font-medium ${VARIANT_CLASSES[link.variant]}`}
+                      charClassName="py-2"
+                    >
+                      {link.label}
+                    </AnimatedLink>
+                  </Squircle>
+                </li>
+              ) : (
+                <li key={link.id}>
+                  <AnimatedLink
+                    scrollToAnchor={link.id}
+                    scrollOffset={link.offset}
+                    className={`rounded-lg px-4 text-base font-medium ${VARIANT_CLASSES[link.variant]}`}
+                    charClassName="py-2"
+                  >
+                    {link.label}
+                  </AnimatedLink>
+                </li>
+              ),
+            )}
           </ul>
         </nav>
 

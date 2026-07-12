@@ -271,7 +271,7 @@ export function Home() {
       <section
         id="projets"
         ref={projectsSectionRef}
-        className="mx-auto -mt-[156px] max-w-[96rem] px-4 pt-0 pb-12 md:-mt-32 md:px-6 md:pb-24"
+        className="mx-auto -mt-[156px] max-w-[96rem] px-4 pt-0 pb-12 md:-mt-16 md:px-6 md:pb-24"
       >
         {/* Mobile: single stacked column. */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-16 md:hidden">

@@ -58,7 +58,18 @@ export function Squircle({
       : "";
 
   return (
-    <div ref={ref} className={`relative ${className}`}>
+    <div
+      ref={ref}
+      className={`relative ${className}`}
+      // Clips children (e.g. a full-bleed image) to the exact squircle
+      // silhouette — without this, content with sharp rectangular corners
+      // would just paint over the rounded SVG fill/border underneath. Only
+      // applied when there's no border: since the stroke is drawn centered
+      // on the path, clipping to that same path would cut its outer half off.
+      style={
+        path && borderWidth === 0 ? { clipPath: `path('${path}')` } : undefined
+      }
+    >
       {size.width > 0 && (
         <svg
           className="pointer-events-none absolute overflow-visible"
@@ -78,7 +89,10 @@ export function Squircle({
           />
         </svg>
       )}
-      <div className="relative grow">{children}</div>
+      {/* h-full/w-full only take effect when the outer div has an explicit
+          size (e.g. an image container); for content-sized buttons/tags the
+          outer div's height is auto, so these resolve to auto too (no-op). */}
+      <div className="relative grow h-full w-full">{children}</div>
     </div>
   );
 }

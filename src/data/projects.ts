@@ -1,3 +1,5 @@
+import type { ProcessStep } from "./process";
+
 export interface ProjectMeta {
   roles: string[];
   duration: string;
@@ -45,12 +47,50 @@ export interface Project {
   userTesting?: string;
   livePrototypeUrl?: string;
   retrospective?: string;
+  /** Shown in the project page's overview row, e.g. "Application mobile". */
+  overviewType?: string;
+  /** Shown in the project page's overview row, e.g. "Terminé"/"En cours". */
+  status?: string;
+  /** The project page's own "Cadrage" process steps (reuses the home
+   * page's ProcessCard). */
+  processSteps?: ProcessStep[];
 }
+
+// Generic UX methodology steps, reused across every project page's
+// "Cadrage" section until each project gets its own specific write-up.
+const DEFAULT_PROCESS_STEPS: ProcessStep[] = [
+  {
+    number: "01",
+    title: "Cadrage & Objectifs",
+    description:
+      "Définir le périmètre du projet, poser les intentions et les objectifs avant toute décision visuelle.",
+  },
+  {
+    number: "02",
+    title: "Identité & Univers",
+    description:
+      "Création de la charte graphique et construction de l'univers visuel, la base qui donne le ton à tout le reste.",
+  },
+  {
+    number: "03",
+    title: "Navigation & Flows",
+    description:
+      "Conception de l'architecture de navigation et des flows pour définir comment les écrans s'articulent entre eux.",
+  },
+  {
+    number: "04",
+    title: "Design & Prototypage",
+    description:
+      "Création des écrans, des assets, et vibe coding du prototype pour faire vivre l'application.",
+  },
+];
 
 export const projects: Project[] = [
   {
     slug: "naya",
     title: "Naya",
+    // Placeholder — à remplacer par la vraie tagline du projet.
+    tagline: "Une tagline à venir pour Naya",
     projectKind: "personnel",
     duration: "6 mois",
     tags: [
@@ -59,6 +99,21 @@ export const projects: Project[] = [
       "UI Design",
       "Prototypage & Vibe coding",
     ],
+    meta: {
+      roles: ["Product Designer"],
+      duration: "6 mois",
+      tools: ["Figma"],
+    },
+    overviewType: "Application mobile",
+    status: "Terminé",
+    // Placeholder — à remplacer par le vrai texte de présentation.
+    context:
+      "Texte de présentation du projet à venir : contexte, objectifs, et périmètre de Naya.",
+    // Placeholder — à remplacer par la vraie cible/problématique.
+    targetUsers:
+      "Description de la cible et de la problématique adressée par Naya à venir.",
+    screens: [{ image: "" }, { image: "" }],
+    processSteps: DEFAULT_PROCESS_STEPS,
   },
   {
     slug: "acpr",
@@ -71,19 +126,71 @@ export const projects: Project[] = [
       "Prototypage & Vibe coding",
       "Collaboration stakeholders",
     ],
+    meta: {
+      roles: ["Product Designer"],
+      duration: "En cours",
+      tools: ["Figma"],
+    },
+    // Placeholder — à remplacer par le vrai type de projet.
+    overviewType: "À définir",
+    status: "En cours",
+    // Placeholder — à remplacer par le vrai texte de présentation.
+    context:
+      "Texte de présentation du projet à venir : contexte, objectifs, et périmètre d'ACPR.",
+    // Placeholder — à remplacer par la vraie cible/problématique.
+    targetUsers:
+      "Description de la cible et de la problématique adressée par ACPR à venir.",
+    screens: [{ image: "" }, { image: "" }],
+    processSteps: DEFAULT_PROCESS_STEPS,
   },
   {
     slug: "design-system-os",
     title: "Design System OS",
+    // Placeholder — à remplacer par la vraie tagline du projet.
+    tagline: "Une tagline à venir pour Design System OS",
     projectKind: "professionnel",
     duration: "En cours",
     tags: ["Design System", "Design Tokens", "Figma"],
+    meta: {
+      roles: ["Product Designer"],
+      duration: "En cours",
+      tools: ["Figma"],
+    },
+    // Placeholder — à remplacer par le vrai type de projet.
+    overviewType: "À définir",
+    status: "En cours",
+    // Placeholder — à remplacer par le vrai texte de présentation.
+    context:
+      "Texte de présentation du projet à venir : contexte, objectifs, et périmètre de Design System OS.",
+    // Placeholder — à remplacer par la vraie cible/problématique.
+    targetUsers:
+      "Description de la cible et de la problématique adressée par Design System OS à venir.",
+    screens: [{ image: "" }, { image: "" }],
+    processSteps: DEFAULT_PROCESS_STEPS,
   },
   {
     slug: "voyage",
     title: "Voyage",
+    // Placeholder — à remplacer par la vraie tagline du projet.
+    tagline: "Une tagline à venir pour Voyage",
     projectKind: "personnel",
     duration: "2 mois",
     tags: ["Direction Artistique", "UI Design", "Prototypage"],
+    meta: {
+      roles: ["Product Designer"],
+      duration: "2 mois",
+      tools: ["Figma"],
+    },
+    // Placeholder — à remplacer par le vrai type de projet.
+    overviewType: "À définir",
+    status: "Terminé",
+    // Placeholder — à remplacer par le vrai texte de présentation.
+    context:
+      "Texte de présentation du projet à venir : contexte, objectifs, et périmètre de Voyage.",
+    // Placeholder — à remplacer par la vraie cible/problématique.
+    targetUsers:
+      "Description de la cible et de la problématique adressée par Voyage à venir.",
+    screens: [{ image: "" }, { image: "" }],
+    processSteps: DEFAULT_PROCESS_STEPS,
   },
 ];

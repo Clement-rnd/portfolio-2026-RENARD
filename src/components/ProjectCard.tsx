@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import type { Project } from "../data/projects";
 import { DotSeparator } from "./DotSeparator";
 import { Squircle } from "./Squircle";
+import { usePageTransition } from "../lib/PageTransitionContext";
 
 const PROJECT_KIND_LABEL = {
   personnel: "Projet perso",
@@ -19,12 +20,25 @@ function isVideo(src: string) {
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
+  const { navigateWithExit } = usePageTransition();
+  const href = `/projects/${project.slug}`;
+
   return (
     <Link
-      to={`/projects/${project.slug}`}
+      to={href}
+      onClick={(event) => {
+        event.preventDefault();
+        navigateWithExit(href);
+      }}
       className="group flex flex-col gap-4"
     >
-      <div className="relative h-80 w-full overflow-hidden rounded-2xl bg-neutral-100">
+      <Squircle
+        cornerRadius={16}
+        cornerSmoothing={1}
+        fill="var(--color-neutral-100)"
+        borderWidth={0}
+        className="h-80 w-full"
+      >
         {project.coverImage &&
           (isVideo(project.coverImage) ? (
             <video
@@ -55,7 +69,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             </span>
           </Squircle>
         </div>
-      </div>
+      </Squircle>
 
       <div className="flex flex-col items-start gap-4">
         <div className="flex flex-col items-start gap-1">

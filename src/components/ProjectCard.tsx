@@ -20,8 +20,11 @@ function isVideo(src: string) {
 
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <Link to={`/projects/${project.slug}`} className="flex flex-col gap-4">
-      <div className="h-80 w-full overflow-hidden rounded-2xl bg-neutral-100">
+    <Link
+      to={`/projects/${project.slug}`}
+      className="group flex flex-col gap-4"
+    >
+      <div className="relative h-80 w-full overflow-hidden rounded-2xl bg-neutral-100">
         {project.coverImage &&
           (isVideo(project.coverImage) ? (
             <video
@@ -30,15 +33,20 @@ export function ProjectCard({ project }: ProjectCardProps) {
               loop
               muted
               playsInline
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             />
           ) : (
             <img
               src={project.coverImage}
               alt=""
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             />
           ))}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="scale-90 rounded-full bg-black/40 px-5 py-2.5 text-sm font-medium text-white opacity-0 transition-all duration-300 ease-out group-hover:scale-100 group-hover:opacity-100">
+            Coming soon
+          </span>
+        </div>
       </div>
 
       <div className="flex flex-col items-start gap-4">

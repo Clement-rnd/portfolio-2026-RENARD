@@ -20,7 +20,7 @@ export function Footer() {
   return (
     <footer
       id="contact"
-      className="flex flex-col gap-8 bg-background px-4 py-12 md:px-6"
+      className="mx-auto flex max-w-[96rem] flex-col gap-8 bg-background px-4 py-12 md:px-6 md:py-24"
     >
       <motion.div {...revealProps(0)} className="flex justify-end">
         <Button className="text-sm text-heading" onClick={() => scrollToTop()}>
@@ -30,7 +30,7 @@ export function Footer() {
 
       <motion.hr {...revealProps(1)} className="border-neutral-200" />
 
-      <div className="flex flex-col gap-8 md:flex-row md:gap-16">
+      <div className="flex flex-col gap-8 md:flex-row md:items-start md:gap-32">
         <motion.div {...revealProps(2)}>
           <AnimatedLink scrollToAnchor="about" className={columnTitleClassName}>
             À propos
@@ -81,14 +81,14 @@ export function Footer() {
             ))}
           </div>
         </div>
-      </div>
 
-      <motion.p
-        {...revealProps(8)}
-        className="text-sm font-medium text-body"
-      >
-        © 2026 RENARD Clément
-      </motion.p>
+        <motion.p
+          {...revealProps(8)}
+          className="text-sm font-medium text-body md:ml-auto"
+        >
+          © 2026 RENARD Clément
+        </motion.p>
+      </div>
     </footer>
   );
 }

@@ -1,4 +1,4 @@
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useRef, useState } from "react";
 import { AnimatedHeading } from "../components/AnimatedHeading";
 import { Button } from "../components/Button";
@@ -114,6 +114,23 @@ const ABOUT_TOGGLE_DELAYS: number[] = [];
 }
 
 export function Home() {
+  const projectsSectionRef = useRef(null);
+  const { scrollYProgress: projectsScrollProgress } = useScroll({
+    target: projectsSectionRef,
+    offset: ["start end", "end start"],
+  });
+  // The left column (projects 0-1) and right column (projects 2-3) drift in
+  // opposite directions as you scroll, so they shift out of sync instead of
+  // scrolling as a flat grid.
+  const projectsColumnAY = useTransform(projectsScrollProgress, [0, 1], [120, -120]);
+  const projectsColumnBY = useTransform(projectsScrollProgress, [0, 1], [-120, 120]);
+
+  // Matches the named grid-template-areas from the reference design: "Area"
+  // and "Area-2" sit at the top of the grid (visible on load), "Area-3" and
+  // "Area-4" sit lower (revealed on scroll). Desktop additionally shifts
+  // "Area-3"/"Area-4" one column to the right of their column-mate.
+  const PROJECT_GRID_AREAS = ["Area", "Area-3", "Area-2", "Area-4"];
+
   const aboutTextRef = useRef(null);
   const isAboutTextInView = useInView(aboutTextRef, {
     once: true,
@@ -128,8 +145,8 @@ export function Home() {
 
   return (
     <main>
-      <section className="flex min-h-screen flex-col justify-end gap-12 pb-[33vh] md:justify-center md:gap-8 md:px-6 md:pb-0">
-        <div className="hidden md:flex md:max-w-2xl md:flex-col md:items-start md:gap-8">
+      <section className="mx-auto flex min-h-screen max-w-[96rem] flex-col justify-end gap-12 px-4 pb-[33vh] md:px-6 lg:justify-center lg:gap-8 lg:pb-0">
+        <div className="hidden lg:flex lg:max-w-2xl lg:flex-col lg:items-start lg:gap-8">
           <div className="flex flex-col gap-4">
             <div className="font-satoshi text-[clamp(2.5rem,5vw,4.5rem)] font-bold leading-[1.1] tracking-[-0.02em] text-heading">
               <RevealChars
@@ -188,8 +205,8 @@ export function Home() {
           </motion.div>
         </div>
 
-        <div className="flex flex-col gap-12 md:hidden">
-          <div className="flex flex-col gap-3 px-4 leading-[1.4]">
+        <div className="flex flex-col gap-12 lg:hidden">
+          <div className="flex flex-col gap-3 leading-[1.4]">
             <div className="font-satoshi text-[28px] font-bold tracking-[-0.28px] text-heading">
               <RevealChars
                 text={HERO_TITLE_LINE_1}
@@ -213,7 +230,7 @@ export function Home() {
               delay={HERO_PARAGRAPH_DELAY}
               stagger={HERO_PARAGRAPH_STAGGER}
               duration={HERO_PARAGRAPH_WORD_DURATION}
-              className="text-lg font-medium tracking-[-0.16px] text-body"
+              className="max-w-[25rem] text-lg font-medium tracking-[-0.16px] text-body md:max-w-[40rem]"
             />
           </div>
           <motion.div
@@ -221,11 +238,11 @@ export function Home() {
               delay: HERO_BUTTONS_DELAY,
               duration: HERO_STEP_DURATION,
             })}
-            className="flex gap-[10px] px-4"
+            className="flex gap-[10px]"
           >
             <Button
-              wrapperClassName="flex-1"
-              className="w-full justify-center px-4 text-sm text-white"
+              wrapperClassName="flex-1 md:flex-none"
+              className="w-full justify-center px-4 text-sm text-white md:w-auto"
               charClassName="py-2"
               fill="var(--color-heading)"
               cornerRadius={8}
@@ -236,8 +253,8 @@ export function Home() {
               Me contacter
             </Button>
             <Button
-              wrapperClassName="flex-1"
-              className="w-full justify-center px-4 text-sm text-heading"
+              wrapperClassName="flex-1 md:flex-none"
+              className="w-full justify-center px-4 text-sm text-heading md:w-auto"
               charClassName="py-2"
               cornerRadius={8}
               onClick={() => {
@@ -252,9 +269,11 @@ export function Home() {
 
       <section
         id="projets"
-        className="-mt-[156px] px-4 pt-0 pb-12 md:mt-0 md:px-6 md:py-12"
+        ref={projectsSectionRef}
+        className="mx-auto -mt-[156px] max-w-[96rem] px-4 pt-0 pb-12 md:-mt-32 md:px-6 md:pb-24"
       >
-        <div className="grid grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-2">
+        {/* Mobile: single stacked column. */}
+        <div className="grid grid-cols-1 gap-x-8 gap-y-16 md:hidden">
           {projects.map((project, index) =>
             index === 0 ? (
               <motion.div
@@ -276,12 +295,116 @@ export function Home() {
             ),
           )}
         </div>
+
+        {/* Tablet: 2 columns, each pair offset vertically only (no
+            horizontal shift), matching the reference design's 768-1023px
+            grid-template-areas. */}
+        <div
+          className="hidden md:grid md:gap-[1.6rem] lg:hidden"
+          style={{
+            gridTemplateColumns: "repeat(8, 1fr)",
+            gridTemplateAreas: `
+              ". . . . Area-2 Area-2 Area-2 Area-2"
+              "Area Area Area Area Area-2 Area-2 Area-2 Area-2"
+              "Area Area Area Area Area-2 Area-2 Area-2 Area-2"
+              "Area Area Area Area Area-2 Area-2 Area-2 Area-2"
+              "Area Area Area Area Area-2 Area-2 Area-2 Area-2"
+              "Area Area Area Area . . . ."
+              ". . . . Area-4 Area-4 Area-4 Area-4"
+              "Area-3 Area-3 Area-3 Area-3 Area-4 Area-4 Area-4 Area-4"
+              "Area-3 Area-3 Area-3 Area-3 Area-4 Area-4 Area-4 Area-4"
+              "Area-3 Area-3 Area-3 Area-3 Area-4 Area-4 Area-4 Area-4"
+              "Area-3 Area-3 Area-3 Area-3 Area-4 Area-4 Area-4 Area-4"
+              "Area-3 Area-3 Area-3 Area-3 . . . ."
+            `,
+          }}
+        >
+          {projects.map((project, index) => (
+            <motion.div
+              key={project.slug}
+              style={{
+                gridArea: PROJECT_GRID_AREAS[index],
+                y: index < 2 ? projectsColumnAY : projectsColumnBY,
+              }}
+            >
+              {index === 0 || index === 2 ? (
+                <motion.div
+                  {...useEntranceReveal({
+                    delay: HERO_PROJECTS_DELAY,
+                    duration: HERO_STEP_DURATION,
+                  })}
+                >
+                  <ProjectCard project={project} />
+                </motion.div>
+              ) : (
+                <motion.div
+                  {...useScrollReveal({ y: 60, duration: 0.6, amount: 0.5 })}
+                >
+                  <ProjectCard project={project} />
+                </motion.div>
+              )}
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Desktop: same 2 columns, but the lower card in each column also
+            shifts one grid column to the right of its column-mate. */}
+        <div
+          className="hidden lg:grid lg:gap-[1rem]"
+          style={{
+            gridTemplateColumns: "repeat(10, 1fr)",
+            gridTemplateAreas: `
+              ". . . . . Area-2 Area-2 Area-2 Area-2 ."
+              "Area Area Area Area . Area-2 Area-2 Area-2 Area-2 ."
+              "Area Area Area Area . Area-2 Area-2 Area-2 Area-2 ."
+              "Area Area Area Area . Area-2 Area-2 Area-2 Area-2 ."
+              "Area Area Area Area . Area-2 Area-2 Area-2 Area-2 ."
+              "Area Area Area Area . . . . . ."
+              ". . . . . . Area-4 Area-4 Area-4 Area-4"
+              ". Area-3 Area-3 Area-3 Area-3 . Area-4 Area-4 Area-4 Area-4"
+              ". Area-3 Area-3 Area-3 Area-3 . Area-4 Area-4 Area-4 Area-4"
+              ". Area-3 Area-3 Area-3 Area-3 . Area-4 Area-4 Area-4 Area-4"
+              ". Area-3 Area-3 Area-3 Area-3 . Area-4 Area-4 Area-4 Area-4"
+              ". Area-3 Area-3 Area-3 Area-3 . . . . ."
+            `,
+          }}
+        >
+          {projects.map((project, index) => (
+            <motion.div
+              key={project.slug}
+              style={{
+                gridArea: PROJECT_GRID_AREAS[index],
+                y: index < 2 ? projectsColumnAY : projectsColumnBY,
+              }}
+            >
+              {index === 0 || index === 2 ? (
+                <motion.div
+                  {...useEntranceReveal({
+                    delay: HERO_PROJECTS_DELAY,
+                    duration: HERO_STEP_DURATION,
+                  })}
+                >
+                  <ProjectCard project={project} />
+                </motion.div>
+              ) : (
+                <motion.div
+                  {...useScrollReveal({ y: 60, duration: 0.6, amount: 0.5 })}
+                >
+                  <ProjectCard project={project} />
+                </motion.div>
+              )}
+            </motion.div>
+          ))}
+        </div>
       </section>
 
-      <section id="about" className="px-4 py-12 md:px-6">
+      <section
+        id="about"
+        className="mx-auto max-w-[96rem] px-4 py-12 md:px-6 md:py-24"
+      >
         <div
           ref={aboutHeaderRef}
-          className="flex items-center justify-between gap-4"
+          className="flex max-w-3xl items-center justify-between gap-4 md:max-w-none lg:max-w-3xl"
         >
           <AnimatedHeading
             text={ABOUT_TITLE_TEXT}
@@ -306,7 +429,7 @@ export function Home() {
         </div>
         <div
           ref={aboutTextRef}
-          className="mt-6 flex max-w-3xl flex-col gap-6"
+          className="mt-6 flex max-w-3xl flex-col gap-6 md:max-w-none lg:max-w-3xl"
         >
           {ABOUT_PARAGRAPH_WORDS.map((words, index) => (
             <RevealWords
@@ -326,7 +449,10 @@ export function Home() {
         </div>
       </section>
 
-      <section id="process" className="px-4 py-12 md:px-6">
+      <section
+        id="process"
+        className="mx-auto max-w-[96rem] px-4 py-12 md:px-6 md:py-24"
+      >
         <AnimatedHeading
           text="Mon process"
           as="h2"
@@ -334,7 +460,7 @@ export function Home() {
           duration={ABOUT_TITLE_DURATION}
           className="font-casta text-4xl font-medium leading-none text-heading [text-box-edge:cap_alphabetic] [text-box-trim:trim-both]"
         />
-        <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4">
+        <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {processSteps.map((step, index) => (
             <motion.div
               key={step.number}

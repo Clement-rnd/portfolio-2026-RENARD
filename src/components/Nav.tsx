@@ -34,7 +34,7 @@ const NAV_LINKS = [
 
 const VARIANT_CLASSES = {
   tertiary: "text-neutral-700",
-  primary: "bg-neutral-700 text-neutral-50",
+  primary: "bg-[var(--color-heading)] text-white",
 };
 
 interface MobileMenuSubItem {
@@ -109,12 +109,12 @@ export function Nav() {
         y: 20,
         duration: HERO_STEP_DURATION,
       })}
-      className="relative z-50 w-[90%] max-w-[96rem] mx-auto pt-4 pb-3"
+      className="relative z-50 mx-auto max-w-[96rem] px-4 pt-4 pb-3 md:px-6"
     >
       <div className="flex items-center justify-between gap-8">
         <img src={logo} alt="Studio Oni" className="h-9 w-auto" />
 
-        <nav className="hidden md:block">
+        <nav className="hidden lg:block">
           <ul className="flex items-center gap-4">
             {NAV_LINKS.map((link) => (
               <li key={link.id}>
@@ -136,7 +136,7 @@ export function Nav() {
           onClick={() => setIsOpen((open) => !open)}
           aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
           aria-expanded={isOpen}
-          className="relative z-50 h-7 w-7 text-heading md:hidden"
+          className="relative z-50 h-7 w-7 text-heading lg:hidden"
         >
           <BurgerIcon isOpen={isOpen} size={28} />
         </button>
@@ -149,7 +149,7 @@ export function Nav() {
             animate={{ x: "0%" }}
             exit={{ x: "100%" }}
             transition={{ duration: 0.5, ease: EASE_POWER3_OUT }}
-            className="fixed inset-0 z-40 flex flex-col items-start gap-6 overflow-y-auto bg-background px-6 pt-24 pb-12 shadow-[-6px_0_16px_-8px_rgba(0,0,0,0.12)] md:hidden"
+            className="fixed inset-0 z-40 flex flex-col items-start gap-6 overflow-y-auto bg-background px-6 pt-24 pb-12 shadow-[-6px_0_16px_-8px_rgba(0,0,0,0.12)] lg:hidden"
           >
             {MOBILE_MENU_GROUPS.map((group) => {
               const titleDelay = 0.2 + mobileItemIndex * 0.1;

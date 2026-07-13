@@ -56,6 +56,22 @@ export interface Project {
   processSteps?: ProcessStep[];
 }
 
+// Placeholder lorem ipsum, reused across every project page's introduction
+// cards until each project gets its own specific write-up.
+const DEFAULT_INTRO: { project: ProjectIntroCard; context: ProjectIntroCard } =
+  {
+    project: {
+      title: "Lorem ipsum dolor",
+      description:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    },
+    context: {
+      title: "Ut enim ad minim",
+      description:
+        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    },
+  };
+
 // Generic UX methodology steps, reused across every project page's
 // "Cadrage" section until each project gets its own specific write-up.
 const DEFAULT_PROCESS_STEPS: ProcessStep[] = [
@@ -113,6 +129,7 @@ export const projects: Project[] = [
     targetUsers:
       "Description de la cible et de la problématique adressée par Naya à venir.",
     screens: [{ image: "" }, { image: "" }],
+    intro: DEFAULT_INTRO,
     processSteps: DEFAULT_PROCESS_STEPS,
   },
   {
@@ -141,6 +158,7 @@ export const projects: Project[] = [
     targetUsers:
       "Description de la cible et de la problématique adressée par ACPR à venir.",
     screens: [{ image: "" }, { image: "" }],
+    intro: DEFAULT_INTRO,
     processSteps: DEFAULT_PROCESS_STEPS,
   },
   {
@@ -166,6 +184,7 @@ export const projects: Project[] = [
     targetUsers:
       "Description de la cible et de la problématique adressée par Design System OS à venir.",
     screens: [{ image: "" }, { image: "" }],
+    intro: DEFAULT_INTRO,
     processSteps: DEFAULT_PROCESS_STEPS,
   },
   {
@@ -191,6 +210,7 @@ export const projects: Project[] = [
     targetUsers:
       "Description de la cible et de la problématique adressée par Voyage à venir.",
     screens: [{ image: "" }, { image: "" }],
+    intro: DEFAULT_INTRO,
     processSteps: DEFAULT_PROCESS_STEPS,
   },
 ];

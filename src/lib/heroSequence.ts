@@ -1,3 +1,5 @@
+import { EXIT_SECTION_STAGGER } from "./exitTransition";
+
 export const HERO_TITLE_TEXT = "Salut, moi c’est Clément !";
 export const HERO_TITLE_LINE_1 = "Salut,";
 export const HERO_TITLE_LINE_2 = "moi c’est Clément !";
@@ -58,3 +60,12 @@ export const HERO_NAV_DELAY = nextStart(
   HERO_BUTTONS_DELAY,
   HERO_STEP_DURATION,
 );
+
+// Exit mirrors the hero's own top-to-bottom order (title -> paragraph ->
+// buttons) instead of every element leaving at once, but — unlike the
+// entrance above — only offsets when each one *starts*, by the same small
+// flat beat used between sections. Waiting for each one to fully finish
+// before the next starts (like the entrance does) reads as sluggish on the
+// way out, since exits are meant to feel quick.
+export const HERO_PARAGRAPH_EXIT_DELAY = EXIT_SECTION_STAGGER;
+export const HERO_BUTTONS_EXIT_DELAY = EXIT_SECTION_STAGGER * 2;

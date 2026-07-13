@@ -20,7 +20,9 @@ import {
 } from "../lib/exitTransition";
 import {
   HERO_BUTTONS_DELAY,
+  HERO_BUTTONS_EXIT_DELAY,
   HERO_PARAGRAPH_DELAY,
+  HERO_PARAGRAPH_EXIT_DELAY,
   HERO_PARAGRAPH_STAGGER,
   HERO_PARAGRAPH_TEXT,
   HERO_PARAGRAPH_WORD_DURATION,
@@ -122,6 +124,10 @@ const ABOUT_TOGGLE_DELAYS: number[] = [];
 export function Home() {
   const { isExiting } = usePageTransition();
   const HERO_EXIT_DELAY = exitSectionDelay("hero");
+  const HERO_PARAGRAPH_EXIT_TOTAL_DELAY =
+    HERO_EXIT_DELAY + HERO_PARAGRAPH_EXIT_DELAY;
+  const HERO_BUTTONS_EXIT_TOTAL_DELAY =
+    HERO_EXIT_DELAY + HERO_BUTTONS_EXIT_DELAY;
   const PROJECTS_EXIT_DELAY = exitSectionDelay("projects");
   const ABOUT_EXIT_DELAY = exitSectionDelay("about");
   const PROCESS_EXIT_DELAY = exitSectionDelay("process");
@@ -185,7 +191,7 @@ export function Home() {
               words={HERO_PARAGRAPH_TEXT}
               trigger={true}
               exiting={isExiting}
-              exitDelay={HERO_EXIT_DELAY}
+              exitDelay={HERO_PARAGRAPH_EXIT_TOTAL_DELAY}
               delay={HERO_PARAGRAPH_DELAY}
               stagger={HERO_PARAGRAPH_STAGGER}
               duration={HERO_PARAGRAPH_WORD_DURATION}
@@ -195,7 +201,7 @@ export function Home() {
           <motion.div
             {...useEntranceReveal({
               exiting: isExiting,
-              exitDelay: HERO_EXIT_DELAY,
+              exitDelay: HERO_BUTTONS_EXIT_TOTAL_DELAY,
               delay: HERO_BUTTONS_DELAY,
               duration: HERO_STEP_DURATION,
             })}
@@ -252,7 +258,7 @@ export function Home() {
               words={HERO_PARAGRAPH_TEXT}
               trigger={true}
               exiting={isExiting}
-              exitDelay={HERO_EXIT_DELAY}
+              exitDelay={HERO_PARAGRAPH_EXIT_TOTAL_DELAY}
               delay={HERO_PARAGRAPH_DELAY}
               stagger={HERO_PARAGRAPH_STAGGER}
               duration={HERO_PARAGRAPH_WORD_DURATION}
@@ -262,7 +268,7 @@ export function Home() {
           <motion.div
             {...useEntranceReveal({
               exiting: isExiting,
-              exitDelay: HERO_EXIT_DELAY,
+              exitDelay: HERO_BUTTONS_EXIT_TOTAL_DELAY,
               delay: HERO_BUTTONS_DELAY,
               duration: HERO_STEP_DURATION,
             })}

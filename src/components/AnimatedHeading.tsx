@@ -1,6 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { Fragment, useMemo, useRef } from "react";
-import { EXIT_DURATION } from "../lib/exitTransition";
+import { EXIT_DISTANCE, EXIT_DURATION } from "../lib/exitTransition";
 
 // Approximation of GSAP's "power3.out" easing curve.
 const EASE_POWER3_OUT = [0.215, 0.61, 0.355, 1] as const;
@@ -30,9 +30,8 @@ export interface AnimatedHeadingProps {
   once?: boolean;
   /** Fraction of the element that must be visible to trigger the reveal. */
   amount?: number;
-  /** Plays the exit variant (slides up out of its mask), char by char,
-   * regardless of viewport state — used when the page itself is navigating
-   * away. */
+  /** Plays the exit variant (fades out), char by char, regardless of
+   * viewport state — used when the page itself is navigating away. */
   exiting?: boolean;
   /** Base delay (s) before this element's exit starts — e.g. a per-section
    * offset so sections leave top-to-bottom. */
@@ -71,32 +70,27 @@ export function AnimatedHeading({
             {word.split("").map((char, i) => {
               const index = charIndex++;
               return (
-                <span
+                <motion.span
                   key={i}
-                  className="inline-block overflow-hidden align-top"
-                  style={{ height: "1em", lineHeight: 1 }}
+                  className={`inline-block ${charClassName}`}
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={
+                    exiting
+                      ? { opacity: 0, y: -EXIT_DISTANCE }
+                      : isInView
+                        ? { opacity: 1, y: 0 }
+                        : undefined
+                  }
+                  transition={{
+                    duration: exiting ? EXIT_DURATION : duration,
+                    delay: exiting
+                      ? exitDelay + index * stagger
+                      : delay + index * stagger,
+                    ease: EASE_POWER3_OUT,
+                  }}
                 >
-                  <motion.span
-                    className={`inline-block ${charClassName}`}
-                    initial={{ y: "100%" }}
-                    animate={
-                      exiting
-                        ? { y: "-100%" }
-                        : isInView
-                          ? { y: "0%" }
-                          : undefined
-                    }
-                    transition={{
-                      duration: exiting ? EXIT_DURATION : duration,
-                      delay: exiting
-                        ? exitDelay + index * stagger
-                        : delay + index * stagger,
-                      ease: EASE_POWER3_OUT,
-                    }}
-                  >
-                    {char}
-                  </motion.span>
-                </span>
+                  {char}
+                </motion.span>
               );
             })}
           </span>

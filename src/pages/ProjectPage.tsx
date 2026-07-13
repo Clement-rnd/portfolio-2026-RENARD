@@ -1,10 +1,20 @@
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
 import { useParams } from "react-router-dom";
+import {
+  Idea01Icon,
+  Target01Icon,
+  UserIcon,
+} from "@hugeicons/core-free-icons";
+import { AnimatedHeading } from "../components/AnimatedHeading";
+import { PersonaBubble } from "../components/PersonaBubble";
 import { ProjectCard } from "../components/ProjectCard";
+import { ProjectIntroCard } from "../components/ProjectIntroCard";
 import { RevealChars } from "../components/RevealChars";
 import { Squircle } from "../components/Squircle";
 import { projects } from "../data/projects";
 import { useEntranceReveal } from "../hooks/useEntranceReveal";
+import { useScrollReveal } from "../hooks/useScrollReveal";
 import { usePageTransition } from "../lib/PageTransitionContext";
 import { EXIT_SECTION_STAGGER } from "../lib/exitTransition";
 import {
@@ -23,8 +33,28 @@ function isVideo(src: string) {
 }
 
 const sectionTitleClassName = "font-casta text-3xl font-medium text-heading";
+const animatedSectionTitleClassName = `${sectionTitleClassName} leading-none [text-box-edge:cap_alphabetic] [text-box-trim:trim-both]`;
+const SECTION_TITLE_STAGGER = 0.05;
+const SECTION_TITLE_DURATION = 0.5;
 const overviewLabelClassName = "text-sm font-medium text-body";
 const overviewValueClassName = "text-lg font-medium text-heading";
+const SPECS_LINE_STAGGER = 0.08;
+
+// Placeholder lorem ipsum, reused until real persona quotes are provided.
+const PERSONA_BUBBLES: { text: string; align: "left" | "right" }[] = [
+  {
+    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    align: "left",
+  },
+  {
+    text: "Sed do eiusmod tempor incididunt ut labore et dolore.",
+    align: "right",
+  },
+  {
+    text: "Ut enim ad minim veniam, quis nostrud exercitation.",
+    align: "left",
+  },
+];
 
 export function ProjectPage() {
   const { isExiting } = usePageTransition();
@@ -46,6 +76,24 @@ export function ProjectPage() {
     project.title,
   );
   const COVER_EXIT_DELAY = EXIT_SECTION_STAGGER;
+  const SPECS_EXIT_DELAY = EXIT_SECTION_STAGGER * 2;
+  const INTRO_EXIT_DELAY = EXIT_SECTION_STAGGER * 3;
+  const PERSONAS_EXIT_DELAY = EXIT_SECTION_STAGGER * 4;
+  const TARGET_USERS_EXIT_DELAY = EXIT_SECTION_STAGGER * 5;
+  const targetUsersRef = useRef(null);
+  const isTargetUsersInView = useInView(targetUsersRef, {
+    once: true,
+    amount: 0.2,
+  });
+  const specsRevealProps = (index: number) =>
+    useScrollReveal({
+      y: 16,
+      duration: 0.4,
+      delay: index * SPECS_LINE_STAGGER,
+      amount: 0.2,
+      exiting: isExiting,
+      exitDelay: SPECS_EXIT_DELAY,
+    });
 
   return (
     <main className="mx-auto max-w-[96rem] px-4 md:px-6">
@@ -109,36 +157,46 @@ export function ProjectPage() {
       </section>
 
       <section className="flex flex-col gap-6 pb-12">
-        <hr className="border-neutral-200" />
+        <motion.hr
+          {...specsRevealProps(0)}
+          className="hidden border-neutral-200 md:block"
+        />
         <div className="flex flex-col gap-12 md:flex-row">
           {project.overviewType && (
-            <div className="flex flex-col gap-2">
+            <motion.div {...specsRevealProps(1)} className="flex flex-col gap-2">
               <h6 className={overviewLabelClassName}>Type</h6>
               <p className={overviewValueClassName}>{project.overviewType}</p>
-            </div>
+            </motion.div>
           )}
           {project.meta && project.meta.roles.length > 0 && (
-            <div className="flex flex-col gap-2">
+            <motion.div {...specsRevealProps(2)} className="flex flex-col gap-2">
               <h6 className={overviewLabelClassName}>Rôle</h6>
               <p className={overviewValueClassName}>
                 {project.meta.roles.join(", ")}
               </p>
-            </div>
+            </motion.div>
           )}
           {project.tags.length > 0 && (
-            <div className="flex flex-col gap-2">
+            <motion.div {...specsRevealProps(3)} className="flex flex-col gap-2">
               <h6 className={overviewLabelClassName}>Compétences</h6>
               <div className="flex flex-col gap-2">
-                {project.tags.map((tag) => (
-                  <p key={tag} className={overviewValueClassName}>
+                {project.tags.map((tag, index) => (
+                  <motion.p
+                    key={tag}
+                    {...specsRevealProps(4 + index)}
+                    className={overviewValueClassName}
+                  >
                     {tag}
-                  </p>
+                  </motion.p>
                 ))}
               </div>
-            </div>
+            </motion.div>
           )}
           {project.status && (
-            <div className="flex flex-col gap-2">
+            <motion.div
+              {...specsRevealProps(4 + project.tags.length)}
+              className="flex flex-col gap-2"
+            >
               <h6 className={overviewLabelClassName}>Statut</h6>
               <Squircle
                 cornerRadius={8}
@@ -151,15 +209,98 @@ export function ProjectPage() {
                   {project.status}
                 </span>
               </Squircle>
-            </div>
+            </motion.div>
           )}
         </div>
       </section>
 
+      {project.intro && (
+        <section className="flex flex-col gap-6 pt-24 pb-12">
+          <AnimatedHeading
+            text="Introduction"
+            as="h2"
+            stagger={SECTION_TITLE_STAGGER}
+            duration={SECTION_TITLE_DURATION}
+            exiting={isExiting}
+            exitDelay={INTRO_EXIT_DELAY}
+            className={animatedSectionTitleClassName}
+          />
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <motion.div
+              {...useScrollReveal({
+                y: 40,
+                duration: 0.5,
+                delay: 0,
+                amount: 0.3,
+                exiting: isExiting,
+                exitDelay: INTRO_EXIT_DELAY,
+              })}
+            >
+              <ProjectIntroCard
+                icon={Target01Icon}
+                title={project.intro.project.title}
+                description={project.intro.project.description}
+              />
+            </motion.div>
+            <motion.div
+              {...useScrollReveal({
+                y: 40,
+                duration: 0.5,
+                delay: 0.1,
+                amount: 0.3,
+                exiting: isExiting,
+                exitDelay: INTRO_EXIT_DELAY,
+              })}
+            >
+              <ProjectIntroCard
+                icon={Idea01Icon}
+                title={project.intro.context.title}
+                description={project.intro.context.description}
+              />
+            </motion.div>
+          </div>
+        </section>
+      )}
+
+      {project.intro && (
+        <section className="flex flex-col gap-10 pb-12">
+          {PERSONA_BUBBLES.map((persona, index) => (
+            <motion.div
+              key={index}
+              {...useScrollReveal({
+                y: 40,
+                duration: 0.5,
+                delay: index * 0.1,
+                amount: 0.3,
+                exiting: isExiting,
+                exitDelay: PERSONAS_EXIT_DELAY,
+              })}
+              className={`flex ${persona.align === "right" ? "justify-end" : "justify-start"}`}
+            >
+              <PersonaBubble
+                icon={UserIcon}
+                text={persona.text}
+                align={persona.align}
+              />
+            </motion.div>
+          ))}
+        </section>
+      )}
+
       {project.targetUsers && (
         <section className="flex h-[66vh] flex-col items-center justify-center pb-12 text-center">
-          <p className="max-w-[64rem] font-casta text-[2rem] font-medium leading-snug text-heading md:text-[3rem]">
-            {project.targetUsers}
+          <p
+            ref={targetUsersRef}
+            className="max-w-[64rem] font-casta text-[2rem] font-medium leading-snug text-heading md:text-[3rem]"
+          >
+            <RevealChars
+              text={project.targetUsers}
+              trigger={isTargetUsersInView}
+              exiting={isExiting}
+              exitDelay={TARGET_USERS_EXIT_DELAY}
+              stagger={PROJECT_BASELINE_STAGGER}
+              duration={PROJECT_BASELINE_CHAR_DURATION}
+            />
           </p>
         </section>
       )}

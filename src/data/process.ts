@@ -7,26 +7,49 @@ export interface ProcessStep {
 export const processSteps: ProcessStep[] = [
   {
     number: "01",
-    title: "Cadrage & Brief",
+    title: "Cadrage",
     description:
-      "Comprendre les objectifs, les besoins utilisateurs et les contraintes techniques. Définir le périmètre et les problèmes bloquant.",
+      "Définir le périmètre du concept, identifier les cibles et poser les bases du projet.",
   },
   {
     number: "02",
-    title: "Recherche & Stratégie",
+    title: "Recherche",
     description:
-      "Comprendre les besoins utilisateurs par la recherche, analyser la concurrence et identifier les opportunités de design.",
+      "Procéder à un benchmark concurrentiel, étudier le public cible et les cas d'usage. Définir le scope MVP.",
   },
   {
     number: "03",
-    title: "Design & Prototypage",
+    title: "Direction artistique",
     description:
-      "Concevoir les interfaces, vérification du respect du design system, vibe coder un prototype fonctionnel pour tester/valider.",
+      "Construction de l'identité de marque : nom, logo, univers visuel.",
   },
   {
     number: "04",
-    title: "Validation & Test utilisateurs",
+    title: "Design system",
     description:
-      "Fournir aux devs des spécifications détaillées, collaborer pendant le développement et garantir la qualité jusqu'en production.",
+      "Mise en place des fondations visuelles : couleurs, typographies, composants réutilisables.",
+  },
+  {
+    number: "05",
+    title: "Design des écrans",
+    description:
+      "Mise en place de l'arborescence et des userflows, conception des écrans.",
+  },
+  {
+    number: "06",
+    title: "Prototype",
+    description:
+      "Vibe coding du prototype hi-fi totalement fonctionnel sur mobile.",
+  },
+  {
+    number: "07",
+    title: "Tests",
+    description:
+      "Définition des utilisateurs à interviewer, conception de la trame de test et des scénarios à vérifier. Organiser les tests, traiter et synthétiser les résultats.",
+  },
+  {
+    number: "08",
+    title: "Itérations",
+    description: "Ajuster l'application en fonction des retours.",
   },
 ];

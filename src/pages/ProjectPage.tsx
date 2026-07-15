@@ -7,11 +7,15 @@ import {
   UserIcon,
 } from "@hugeicons/core-free-icons";
 import { AnimatedHeading } from "../components/AnimatedHeading";
+import { DesignTokenFlow } from "../components/DesignTokenFlow";
 import { PersonaBubble } from "../components/PersonaBubble";
+import { ProcessTimeline } from "../components/ProcessTimeline";
 import { ProjectCard } from "../components/ProjectCard";
 import { ProjectIntroCard } from "../components/ProjectIntroCard";
 import { RevealChars } from "../components/RevealChars";
+import { SitemapTree } from "../components/SitemapTree";
 import { Squircle } from "../components/Squircle";
+import { TargetUserCard } from "../components/TargetUserCard";
 import { projects } from "../data/projects";
 import { useEntranceReveal } from "../hooks/useEntranceReveal";
 import { useScrollReveal } from "../hooks/useScrollReveal";
@@ -77,9 +81,14 @@ export function ProjectPage() {
   );
   const COVER_EXIT_DELAY = EXIT_SECTION_STAGGER;
   const SPECS_EXIT_DELAY = EXIT_SECTION_STAGGER * 2;
-  const INTRO_EXIT_DELAY = EXIT_SECTION_STAGGER * 3;
-  const PERSONAS_EXIT_DELAY = EXIT_SECTION_STAGGER * 4;
-  const TARGET_USERS_EXIT_DELAY = EXIT_SECTION_STAGGER * 5;
+  const TIMELINE_EXIT_DELAY = EXIT_SECTION_STAGGER * 3;
+  const INTRO_EXIT_DELAY = EXIT_SECTION_STAGGER * 4;
+  const PERSONAS_EXIT_DELAY = EXIT_SECTION_STAGGER * 5;
+  const TARGET_USER_PERSONAS_EXIT_DELAY = EXIT_SECTION_STAGGER * 6;
+  const TARGET_USERS_EXIT_DELAY = EXIT_SECTION_STAGGER * 7;
+  const BRANDING_EXIT_DELAY = EXIT_SECTION_STAGGER * 8;
+  const SITEMAP_EXIT_DELAY = EXIT_SECTION_STAGGER * 9;
+  const DESIGN_SYSTEM_EXIT_DELAY = EXIT_SECTION_STAGGER * 10;
   const targetUsersRef = useRef(null);
   const isTargetUsersInView = useInView(targetUsersRef, {
     once: true,
@@ -156,7 +165,7 @@ export function ProjectPage() {
         </motion.div>
       </section>
 
-      <section className="flex flex-col gap-6 pb-12">
+      <section className="flex flex-col gap-6 py-12">
         <motion.hr
           {...specsRevealProps(0)}
           className="hidden border-neutral-200 md:block"
@@ -214,8 +223,27 @@ export function ProjectPage() {
         </div>
       </section>
 
+      {project.processSteps && project.processSteps.length > 0 && (
+        <section className="flex flex-col gap-6 py-12">
+          <AnimatedHeading
+            text="Process"
+            as="h2"
+            stagger={SECTION_TITLE_STAGGER}
+            duration={SECTION_TITLE_DURATION}
+            exiting={isExiting}
+            exitDelay={TIMELINE_EXIT_DELAY}
+            className={animatedSectionTitleClassName}
+          />
+          <ProcessTimeline
+            steps={project.processSteps}
+            exiting={isExiting}
+            exitDelay={TIMELINE_EXIT_DELAY}
+          />
+        </section>
+      )}
+
       {project.intro && (
-        <section className="flex flex-col gap-6 pt-24 pb-12">
+        <section className="flex flex-col gap-6 py-12">
           <AnimatedHeading
             text="Introduction"
             as="h2"
@@ -263,7 +291,7 @@ export function ProjectPage() {
       )}
 
       {project.intro && (
-        <section className="flex flex-col gap-10 pb-12">
+        <section className="flex flex-col gap-10 py-12">
           {PERSONA_BUBBLES.map((persona, index) => (
             <motion.div
               key={index}
@@ -287,8 +315,43 @@ export function ProjectPage() {
         </section>
       )}
 
+      {project.targetUserPersonas && project.targetUserPersonas.length > 0 && (
+        <section className="flex flex-col gap-6 py-12">
+          <AnimatedHeading
+            text="Utilisateurs cibles"
+            as="h2"
+            stagger={SECTION_TITLE_STAGGER}
+            duration={SECTION_TITLE_DURATION}
+            exiting={isExiting}
+            exitDelay={TARGET_USER_PERSONAS_EXIT_DELAY}
+            className={animatedSectionTitleClassName}
+          />
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            {project.targetUserPersonas.map((persona, index) => (
+              <motion.div
+                key={persona.title}
+                {...useScrollReveal({
+                  y: 40,
+                  duration: 0.5,
+                  delay: index * 0.1,
+                  amount: 0.2,
+                  exiting: isExiting,
+                  exitDelay: TARGET_USER_PERSONAS_EXIT_DELAY,
+                })}
+              >
+                <TargetUserCard
+                  title={persona.title}
+                  context={persona.context}
+                  needs={persona.needs}
+                />
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {project.targetUsers && (
-        <section className="flex h-[66vh] flex-col items-center justify-center pb-12 text-center">
+        <section className="flex h-[66vh] flex-col items-center justify-center py-12 text-center">
           <p
             ref={targetUsersRef}
             className="max-w-[64rem] font-casta text-[2rem] font-medium leading-snug text-heading md:text-[3rem]"
@@ -305,8 +368,108 @@ export function ProjectPage() {
         </section>
       )}
 
+      {project.brandingImages && project.brandingImages.length > 0 && (
+        <section className="flex flex-col gap-6 py-12">
+          <AnimatedHeading
+            text="Branding"
+            as="h2"
+            stagger={SECTION_TITLE_STAGGER}
+            duration={SECTION_TITLE_DURATION}
+            exiting={isExiting}
+            exitDelay={BRANDING_EXIT_DELAY}
+            className={animatedSectionTitleClassName}
+          />
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            {project.brandingImages.map((screen, index) => (
+              <motion.div
+                key={index}
+                {...useScrollReveal({
+                  y: 40,
+                  duration: 0.5,
+                  delay: index * 0.1,
+                  amount: 0.2,
+                  exiting: isExiting,
+                  exitDelay: BRANDING_EXIT_DELAY,
+                })}
+              >
+                <Squircle
+                  cornerRadius={16}
+                  cornerSmoothing={1}
+                  fill="var(--color-neutral-100)"
+                  borderWidth={0}
+                  className="h-80 w-full"
+                >
+                  {screen.image && (
+                    <img
+                      src={screen.image}
+                      alt={screen.caption ?? ""}
+                      className="h-full w-full object-cover"
+                    />
+                  )}
+                </Squircle>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {project.sitemap && project.sitemap.length > 0 && (
+        <section className="flex flex-col gap-6 py-12">
+          <AnimatedHeading
+            text="Arborescence"
+            as="h2"
+            stagger={SECTION_TITLE_STAGGER}
+            duration={SECTION_TITLE_DURATION}
+            exiting={isExiting}
+            exitDelay={SITEMAP_EXIT_DELAY}
+            className={animatedSectionTitleClassName}
+          />
+          <SitemapTree categories={project.sitemap} />
+        </section>
+      )}
+
+      {project.designSystemSection && (
+        <section className="flex flex-col gap-6 py-12">
+          <AnimatedHeading
+            text={project.designSystemSection.title}
+            as="h2"
+            stagger={SECTION_TITLE_STAGGER}
+            duration={SECTION_TITLE_DURATION}
+            exiting={isExiting}
+            exitDelay={DESIGN_SYSTEM_EXIT_DELAY}
+            className={animatedSectionTitleClassName}
+          />
+          <motion.p
+            {...useScrollReveal({
+              y: 40,
+              duration: 0.5,
+              amount: 0.3,
+              exiting: isExiting,
+              exitDelay: DESIGN_SYSTEM_EXIT_DELAY,
+            })}
+            className="max-w-2xl text-lg font-medium text-body"
+          >
+            {project.designSystemSection.description}
+          </motion.p>
+          {project.designTokenFlow && (
+            <motion.div
+              {...useScrollReveal({
+                y: 40,
+                duration: 0.5,
+                delay: 0.1,
+                amount: 0.2,
+                exiting: isExiting,
+                exitDelay: DESIGN_SYSTEM_EXIT_DELAY,
+              })}
+            >
+              <DesignTokenFlow flow={project.designTokenFlow} />
+            </motion.div>
+          )}
+        </section>
+      )}
+
       {project.keyDecisions && project.keyDecisions.length > 0 && (
-        <section className="flex flex-col gap-4 pb-12">
+        <section className="flex flex-col gap-4 py-12">
           <h2 className={sectionTitleClassName}>Décisions clés</h2>
           <ul className="flex flex-col gap-2">
             {project.keyDecisions.map((decision, index) => (
@@ -318,7 +481,7 @@ export function ProjectPage() {
         </section>
       )}
 
-      <section className="flex flex-col gap-6 pb-12">
+      <section className="flex flex-col gap-6 py-12">
         <h2 className={sectionTitleClassName}>Voir d'autres projets</h2>
         <div className="grid grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-3">
           {otherProjects.map((otherProject) => (

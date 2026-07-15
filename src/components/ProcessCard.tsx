@@ -11,8 +11,8 @@ export function ProcessCard({ step }: ProcessCardProps) {
     <Squircle
       cornerRadius={8}
       cornerSmoothing={1}
-      borderColor="var(--color-neutral-200)"
-      fill="none"
+      borderColor="#F0EFEF"
+      fill="#FCFCFC"
       className="h-full"
     >
       <div className="flex h-full flex-col gap-4 p-6">

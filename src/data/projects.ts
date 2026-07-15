@@ -16,9 +16,36 @@ export interface ProjectScreen {
   caption?: string;
 }
 
-export interface ProjectDesignSystemToken {
+export interface DesignToken {
+  name: string;
+  /** The tier-below token/value it resolves to, e.g. a semantic token
+   * pointing at "corail/500", or a raw hex for the primitive tier. */
+  reference: string;
+  /** Swatch color shown next to the token. */
+  color: string;
+}
+
+export interface DesignTokenFlow {
+  primitives: DesignToken[];
+  semantic: DesignToken[];
+  component: DesignToken[];
+}
+
+export interface SitemapItem {
   label: string;
-  value: string;
+  /** Deepest level of the tree, shown with a subtler style (no icon). */
+  children?: string[];
+}
+
+export interface SitemapCategory {
+  label: string;
+  items: SitemapItem[];
+}
+
+export interface TargetUserPersona {
+  title: string;
+  context: string;
+  needs: string;
 }
 
 export interface Project {
@@ -39,10 +66,23 @@ export interface Project {
     context: ProjectIntroCard;
   };
   context?: string;
+  /** Personas shown in the "Utilisateurs cibles" section, just before the
+   * problématique. */
+  targetUserPersonas?: TargetUserPersona[];
   targetUsers?: string;
   artDirection?: string;
   screens?: ProjectScreen[];
-  designSystem?: ProjectDesignSystemToken[];
+  /** The project page's "Branding" section, just below the problématique —
+   * a grid of image cards (moodboard, logo, palette, etc.). */
+  brandingImages?: ProjectScreen[];
+  /** The project page's "Design system" section (title + write-up, above
+   * the token construction visual). */
+  designSystemSection?: {
+    title: string;
+    description: string;
+  };
+  /** The token construction visual (primitives -> semantic -> component). */
+  designTokenFlow?: DesignTokenFlow;
   keyDecisions?: string[];
   userTesting?: string;
   livePrototypeUrl?: string;
@@ -54,6 +94,8 @@ export interface Project {
   /** The project page's own "Cadrage" process steps (reuses the home
    * page's ProcessCard). */
   processSteps?: ProcessStep[];
+  /** The project page's sitemap/arborescence tree. */
+  sitemap?: SitemapCategory[];
 }
 
 // Placeholder lorem ipsum, reused across every project page's introduction
@@ -105,8 +147,7 @@ export const projects: Project[] = [
   {
     slug: "naya",
     title: "Naya",
-    // Placeholder — à remplacer par la vraie tagline du projet.
-    tagline: "Une tagline à venir pour Naya",
+    tagline: "Prendre soin, sans stress",
     projectKind: "personnel",
     duration: "6 mois",
     tags: [
@@ -125,12 +166,223 @@ export const projects: Project[] = [
     // Placeholder — à remplacer par le vrai texte de présentation.
     context:
       "Texte de présentation du projet à venir : contexte, objectifs, et périmètre de Naya.",
-    // Placeholder — à remplacer par la vraie cible/problématique.
+    targetUserPersonas: [
+      {
+        title: "Jeune propriétaire",
+        context:
+          "Premier animal, l'a adopté il y a quelques mois. Tout est nouveau, il découvre.",
+        needs:
+          "Être rassuré. Comprendre si un symptôme est grave ou bénin. Savoir quoi faire en cas de doute. Ne pas paraître ridicule auprès du vétérinaire en posant \"des questions bêtes\".",
+      },
+      {
+        title: "Le propriétaire multi-animaux",
+        context:
+          "Vit avec deux ou trois animaux. Souvent des espèces ou âges différents : un chat senior + un jeune chien par exemple.",
+        needs:
+          "Gérer plusieurs dossiers de santé en parallèle. Ne pas mélanger les traitements. Suivre des rythmes de soins différents (vermifuge tous les mois pour l'un, vaccin annuel pour l'autre).",
+      },
+      {
+        title: "Le propriétaire occupé / pragmatique",
+        context:
+          "Vie active, peu de temps. L'animal est là depuis longtemps, la relation est stable.",
+        needs:
+          "Efficacité. Prendre rendez-vous rapidement. Ne pas oublier les renouvellements de traitements ou les vaccins annuels. Tout faire sans appeler.",
+      },
+      {
+        title: "Le propriétaire d'un animal âgé ou malade",
+        context:
+          "Animal entré dans une phase de soins réguliers : maladie chronique, vieillissement, suivi post-opératoire.",
+        needs:
+          "Suivre l'évolution dans le temps (poids, symptômes, prises de traitement). Communiquer régulièrement avec le vétérinaire entre les rendez-vous. Documenter l'état pour adapter les soins.",
+      },
+    ],
     targetUsers:
-      "Description de la cible et de la problématique adressée par Naya à venir.",
+      "Comment améliorer la communication entre vétérinaires et propriétaires d'animaux ?",
+    // Placeholder slots — vraies images à venir.
+    brandingImages: [
+      { image: "" },
+      { image: "" },
+      { image: "" },
+      { image: "" },
+    ],
     screens: [{ image: "" }, { image: "" }],
-    intro: DEFAULT_INTRO,
-    processSteps: DEFAULT_PROCESS_STEPS,
+    intro: {
+      project: {
+        title: "Projet",
+        description:
+          "NAYA est un écosystème digital dédié à la santé animale une application disponible sur mobile et web, pensée pour deux types d'utilisateurs. Du côté propriétaire : centraliser toutes les informations de ses animaux en un seul endroit. Du côté vétérinaire : gérer les fiches patients, le planning et les échanges.",
+      },
+      context: {
+        title: "Contexte",
+        description:
+          "Quand leur animal ne va pas bien, la plupart des propriétaires se tournent d'abord vers les réseaux sociaux. Les conseils qu'ils reçoivent proviennent de personnes sans formation médicale. Pour un sujet aussi sérieux, ce n'est clairement pas une source fiable.",
+      },
+    },
+    processSteps: [
+      {
+        number: "01",
+        title: "Cadrage",
+        description:
+          "Définir le périmètre du concept, identifier les cibles et poser les bases du projet.",
+      },
+      {
+        number: "02",
+        title: "Recherche",
+        description:
+          "Procéder à un benchmark concurrentiel, étudier le public cible et les cas d'usage. Définir le scope MVP.",
+      },
+      {
+        number: "03",
+        title: "Direction artistique",
+        description:
+          "Construction de l'identité de marque : nom, logo, univers visuel.",
+      },
+      {
+        number: "04",
+        title: "Design system",
+        description:
+          "Mise en place des fondations visuelles : couleurs, typographies, composants réutilisables.",
+      },
+      {
+        number: "05",
+        title: "Design des écrans",
+        description:
+          "Mise en place de l'arborescence et des userflows, conception des écrans.",
+      },
+      {
+        number: "06",
+        title: "Prototype",
+        description:
+          "Vibe coding du prototype hi-fi totalement fonctionnel sur mobile.",
+      },
+      {
+        number: "07",
+        title: "Tests",
+        description:
+          "Définition des utilisateurs à interviewer, conception de la trame de test et des scénarios à vérifier. Organiser les tests, traiter et synthétiser les résultats.",
+      },
+      {
+        number: "08",
+        title: "Itérations",
+        description: "Ajuster l'application en fonction des retours.",
+      },
+    ],
+    designSystemSection: {
+      title: "Design system",
+      // Placeholder — à remplacer par le vrai texte de présentation.
+      description:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+    },
+    designTokenFlow: {
+      primitives: [
+        { name: "corail-500", reference: "#FF5A7D", color: "#FF5A7D" },
+      ],
+      semantic: [
+        {
+          name: "brand-surface-default",
+          reference: "corail/500",
+          color: "#FF5A7D",
+        },
+        {
+          name: "brand-border-primary",
+          reference: "corail/500",
+          color: "#FF5A7D",
+        },
+        {
+          name: "brand-border-focus",
+          reference: "corail/500",
+          color: "#FF5A7D",
+        },
+        {
+          name: "brand-content-primary",
+          reference: "corail/500",
+          color: "#FF5A7D",
+        },
+      ],
+      component: [
+        {
+          name: "dropdown-border-focus",
+          reference: "brand-border-focus",
+          color: "#FF5A7D",
+        },
+        {
+          name: "search-border-focus",
+          reference: "brand-border-focus",
+          color: "#FF5A7D",
+        },
+        {
+          name: "textfield-border-focus",
+          reference: "brand-border-focus",
+          color: "#FF5A7D",
+        },
+      ],
+    },
+    sitemap: [
+      {
+        label: "Accueil",
+        items: [
+          { label: "Planifier une consultation" },
+          { label: "Ajouter des animaux" },
+          { label: "Rappels" },
+          { label: "Notifications" },
+          { label: "Santé" },
+          { label: "Messagerie" },
+          { label: "Profil" },
+        ],
+      },
+      {
+        label: "Messages",
+        items: [
+          { label: "Nouvelle conversation" },
+          {
+            label: "Conversations",
+            children: ["Historique du chat", "Informations"],
+          },
+        ],
+      },
+      {
+        label: "Calendrier",
+        items: [{ label: "Créer un rappel" }],
+      },
+      {
+        label: "Santé",
+        items: [
+          { label: "Consultations" },
+          {
+            label: "Mes animaux",
+            children: ["Informations générales", "Informations médicales"],
+          },
+          { label: "Ordonnances" },
+          { label: "Traitements" },
+        ],
+      },
+      {
+        label: "Compte",
+        items: [
+          {
+            label: "Ma clinique",
+            children: [
+              "Informations générales",
+              "Sécurité et confidentialité",
+              "Langue",
+              "Supprimer mon compte",
+            ],
+          },
+          {
+            label: "Mes informations",
+            children: [
+              "Informations générales",
+              "Sécurité et confidentialité",
+              "Langue",
+              "Supprimer mon compte",
+            ],
+          },
+          { label: "Paramètres de confidentialité" },
+          { label: "À propos" },
+          { label: "Déconnexion" },
+        ],
+      },
+    ],
   },
   {
     slug: "acpr",

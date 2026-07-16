@@ -43,7 +43,7 @@ function ProcessStepRow({
   return (
     <div ref={ref} className="relative flex gap-2">
       <motion.span
-        className="relative z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white"
+        className="relative z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white drop-shadow-md"
         initial={{ opacity: 0, y: 40 }}
         animate={
           exiting

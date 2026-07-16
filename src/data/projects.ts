@@ -72,9 +72,9 @@ export interface Project {
   targetUsers?: string;
   artDirection?: string;
   screens?: ProjectScreen[];
-  /** The project page's "Branding" section, just below the problématique —
-   * a grid of image cards (moodboard, logo, palette, etc.). */
-  brandingImages?: ProjectScreen[];
+  /** Shows the "Direction artistique" section (logo, color palette,
+   * typography specimen, icon set) — bespoke content, currently Naya only. */
+  hasDirectionArtistique?: boolean;
   /** The project page's "Design system" section (title + write-up, above
    * the token construction visual). */
   designSystemSection?: {
@@ -198,14 +198,8 @@ export const projects: Project[] = [
     ],
     targetUsers:
       "Comment améliorer la communication entre vétérinaires et propriétaires d'animaux ?",
-    // Placeholder slots — vraies images à venir.
-    brandingImages: [
-      { image: "" },
-      { image: "" },
-      { image: "" },
-      { image: "" },
-    ],
     screens: [{ image: "" }, { image: "" }],
+    hasDirectionArtistique: true,
     intro: {
       project: {
         title: "Projet",

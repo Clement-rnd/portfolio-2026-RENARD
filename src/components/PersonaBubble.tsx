@@ -20,7 +20,7 @@ export function PersonaBubble({
     <div
       className={`flex items-center gap-4 ${isRight ? "flex-row-reverse" : ""}`}
     >
-      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-body drop-shadow-md">
+      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#FCFCFC] text-body drop-shadow-md">
         <HugeiconsIcon icon={icon} size={28} />
       </div>
       <div className="relative drop-shadow-md">

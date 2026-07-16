@@ -8,6 +8,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { AnimatedHeading } from "../components/AnimatedHeading";
 import { DesignTokenFlow } from "../components/DesignTokenFlow";
+import { DirectionArtistique } from "../components/DirectionArtistique";
 import { PersonaBubble } from "../components/PersonaBubble";
 import { ProcessTimeline } from "../components/ProcessTimeline";
 import { ProjectCard } from "../components/ProjectCard";
@@ -15,7 +16,7 @@ import { ProjectIntroCard } from "../components/ProjectIntroCard";
 import { RevealChars } from "../components/RevealChars";
 import { SitemapTree } from "../components/SitemapTree";
 import { Squircle } from "../components/Squircle";
-import { TargetUserCard } from "../components/TargetUserCard";
+import { TargetUserCarousel } from "../components/TargetUserCarousel";
 import { projects } from "../data/projects";
 import { useEntranceReveal } from "../hooks/useEntranceReveal";
 import { useScrollReveal } from "../hooks/useScrollReveal";
@@ -86,7 +87,7 @@ export function ProjectPage() {
   const PERSONAS_EXIT_DELAY = EXIT_SECTION_STAGGER * 5;
   const TARGET_USER_PERSONAS_EXIT_DELAY = EXIT_SECTION_STAGGER * 6;
   const TARGET_USERS_EXIT_DELAY = EXIT_SECTION_STAGGER * 7;
-  const BRANDING_EXIT_DELAY = EXIT_SECTION_STAGGER * 8;
+  const DA_EXIT_DELAY = EXIT_SECTION_STAGGER * 8;
   const SITEMAP_EXIT_DELAY = EXIT_SECTION_STAGGER * 9;
   const DESIGN_SYSTEM_EXIT_DELAY = EXIT_SECTION_STAGGER * 10;
   const targetUsersRef = useRef(null);
@@ -326,27 +327,17 @@ export function ProjectPage() {
             exitDelay={TARGET_USER_PERSONAS_EXIT_DELAY}
             className={animatedSectionTitleClassName}
           />
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {project.targetUserPersonas.map((persona, index) => (
-              <motion.div
-                key={persona.title}
-                {...useScrollReveal({
-                  y: 40,
-                  duration: 0.5,
-                  delay: index * 0.1,
-                  amount: 0.2,
-                  exiting: isExiting,
-                  exitDelay: TARGET_USER_PERSONAS_EXIT_DELAY,
-                })}
-              >
-                <TargetUserCard
-                  title={persona.title}
-                  context={persona.context}
-                  needs={persona.needs}
-                />
-              </motion.div>
-            ))}
-          </div>
+          <motion.div
+            {...useScrollReveal({
+              y: 40,
+              duration: 0.5,
+              amount: 0.2,
+              exiting: isExiting,
+              exitDelay: TARGET_USER_PERSONAS_EXIT_DELAY,
+            })}
+          >
+            <TargetUserCarousel personas={project.targetUserPersonas} />
+          </motion.div>
         </section>
       )}
 
@@ -368,48 +359,18 @@ export function ProjectPage() {
         </section>
       )}
 
-      {project.brandingImages && project.brandingImages.length > 0 && (
+      {project.hasDirectionArtistique && (
         <section className="flex flex-col gap-6 py-12">
           <AnimatedHeading
-            text="Branding"
+            text="Direction artistique"
             as="h2"
             stagger={SECTION_TITLE_STAGGER}
             duration={SECTION_TITLE_DURATION}
             exiting={isExiting}
-            exitDelay={BRANDING_EXIT_DELAY}
+            exitDelay={DA_EXIT_DELAY}
             className={animatedSectionTitleClassName}
           />
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {project.brandingImages.map((screen, index) => (
-              <motion.div
-                key={index}
-                {...useScrollReveal({
-                  y: 40,
-                  duration: 0.5,
-                  delay: index * 0.1,
-                  amount: 0.2,
-                  exiting: isExiting,
-                  exitDelay: BRANDING_EXIT_DELAY,
-                })}
-              >
-                <Squircle
-                  cornerRadius={16}
-                  cornerSmoothing={1}
-                  fill="var(--color-neutral-100)"
-                  borderWidth={0}
-                  className="h-80 w-full"
-                >
-                  {screen.image && (
-                    <img
-                      src={screen.image}
-                      alt={screen.caption ?? ""}
-                      className="h-full w-full object-cover"
-                    />
-                  )}
-                </Squircle>
-              </motion.div>
-            ))}
-          </div>
+          <DirectionArtistique exiting={isExiting} exitDelay={DA_EXIT_DELAY} />
         </section>
       )}
 

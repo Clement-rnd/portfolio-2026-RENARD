@@ -109,7 +109,7 @@ export function ProcessTimeline({
       />
       {steps.map((step, index) => (
         <ProcessStepRow
-          key={step.number}
+          key={step.title}
           step={step}
           index={index}
           exiting={exiting}

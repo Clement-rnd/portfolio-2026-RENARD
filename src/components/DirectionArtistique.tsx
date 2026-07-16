@@ -28,116 +28,7 @@ export interface DirectionArtistiqueProps {
   exitDelay?: number;
 }
 
-interface Shade {
-  label: string;
-  hex: string | null;
-}
-
-interface Hue {
-  name: string;
-  shades: Shade[];
-}
-
-// Only shades whose real value was confirmed are filled in — the rest are
-// left as empty blocks rather than guessed.
-const PALETTE: Hue[] = [
-  {
-    name: "Corail",
-    shades: [
-      { label: "50", hex: "#fdf7f9" },
-      { label: "100", hex: "#fcf7f9" },
-      { label: "200", hex: "#fceef1" },
-      { label: "300", hex: "#ffe1e6" },
-      { label: "400", hex: "#ff8fa7" },
-      { label: "500", hex: "#ff5a7d" },
-      { label: "600", hex: "#f6486d" },
-      { label: "700", hex: "#da3b5d" },
-      { label: "800", hex: "#cb3152" },
-      { label: "900", hex: null },
-      { label: "950", hex: null },
-    ],
-  },
-  {
-    name: "Stone",
-    shades: [
-      { label: "50", hex: "#fcfcfc" },
-      { label: "100", hex: "#f7f7f7" },
-      { label: "200", hex: "#f5f5f5" },
-      { label: "300", hex: "#ededed" },
-      { label: "400", hex: "#e8e8e8" },
-      { label: "500", hex: "#dcdcdc" },
-      { label: "600", hex: "#b2b2b2" },
-      { label: "700", hex: "#717171" },
-      { label: "800", hex: "#cccccc" },
-      { label: "900", hex: "#181818" },
-      { label: "950", hex: "#0b0a0a" },
-    ],
-  },
-  {
-    name: "Blue",
-    shades: [
-      { label: "50", hex: "#f6f7fe" },
-      { label: "100", hex: "#edeefd" },
-      { label: "200", hex: "#e5e8fa" },
-      { label: "300", hex: "#e0e4ff" },
-      { label: "400", hex: "#8e9af6" },
-      { label: "500", hex: "#5d6fe9" },
-      { label: "600", hex: "#7181ef" },
-      { label: "700", hex: null },
-      { label: "800", hex: "#39438d" },
-      { label: "900", hex: null },
-      { label: "950", hex: null },
-    ],
-  },
-  {
-    name: "Emerald",
-    shades: [
-      { label: "50", hex: "#ecfdf9" },
-      { label: "100", hex: "#e9fcf8" },
-      { label: "200", hex: "#e5faf5" },
-      { label: "300", hex: null },
-      { label: "400", hex: null },
-      { label: "500", hex: "#30c09c" },
-      { label: "600", hex: null },
-      { label: "700", hex: null },
-      { label: "800", hex: "#1d745f" },
-      { label: "900", hex: null },
-      { label: "950", hex: null },
-    ],
-  },
-  {
-    name: "Orange",
-    shades: [
-      { label: "50", hex: "#fffbe6" },
-      { label: "100", hex: "#fff6e0" },
-      { label: "200", hex: "#fceee3" },
-      { label: "300", hex: null },
-      { label: "400", hex: "#faad14" },
-      { label: "500", hex: "#ea863e" },
-      { label: "600", hex: null },
-      { label: "700", hex: null },
-      { label: "800", hex: null },
-      { label: "900", hex: null },
-      { label: "950", hex: null },
-    ],
-  },
-  {
-    name: "Scarlet",
-    shades: [
-      { label: "50", hex: "#fff1f2" },
-      { label: "100", hex: "#ffe4e6" },
-      { label: "200", hex: "#fee1e5" },
-      { label: "300", hex: null },
-      { label: "400", hex: "#fb7185" },
-      { label: "500", hex: "#f43f5e" },
-      { label: "600", hex: "#e11d48" },
-      { label: "700", hex: "#be123c" },
-      { label: "800", hex: "#9f1239" },
-      { label: "900", hex: "#881337" },
-      { label: "950", hex: "#4c0519" },
-    ],
-  },
-];
+const PALETTE = ["#fdf7f9", "#ff5a7d", "#0b0a0a"];
 
 // Representative sample of the Hugeicons set used across the project —
 // stands in for the full icon library preview. Exactly 15 (3 rows of 5).
@@ -215,40 +106,17 @@ export function DirectionArtistique({
         {...logo.reveal(0)}
         src={nayaLogo}
         alt="Logo Naya"
-        className="mx-auto h-auto w-full max-w-[14rem]"
+        className="mx-auto mt-4 h-auto w-full max-w-[14rem]"
       />
 
-      <div
-        ref={palette.ref}
-        className="grid grid-cols-3 gap-x-4 gap-y-8"
-      >
-        {PALETTE.map((hue, columnIndex) => (
-          <motion.div
-            key={hue.name}
-            {...palette.reveal(columnIndex * COLUMN_STAGGER)}
-            className="flex w-full flex-col items-start gap-3"
-          >
-            <h4 className="font-casta text-lg font-medium text-heading">
-              {hue.name}
-            </h4>
-            <div className="flex w-full flex-col gap-1.5">
-              {hue.shades.map((shade) => (
-                <div key={shade.label} className="flex items-center gap-2">
-                  <span className="w-6 shrink-0 text-xs font-medium text-body">
-                    {shade.label}
-                  </span>
-                  {shade.hex ? (
-                    <span
-                      className="h-4 w-10 shrink-0 rounded-md"
-                      style={{ backgroundColor: shade.hex }}
-                    />
-                  ) : (
-                    <span className="h-4 w-10 shrink-0 rounded-md border border-dashed border-neutral-200" />
-                  )}
-                </div>
-              ))}
-            </div>
-          </motion.div>
+      <div ref={palette.ref} className="flex justify-center gap-2">
+        {PALETTE.map((hex, index) => (
+          <motion.span
+            key={hex}
+            {...palette.reveal(index * COLUMN_STAGGER)}
+            className="h-10 w-[60px] shrink-0 rounded-lg drop-shadow-md"
+            style={{ backgroundColor: hex }}
+          />
         ))}
       </div>
 

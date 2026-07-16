@@ -1,4 +1,26 @@
 import type { ProcessStep } from "./process";
+import screenSplash from "../assets/images/naya/screens/splash.png";
+import screenHome from "../assets/images/naya/screens/home.png";
+import screenHealth from "../assets/images/naya/screens/health.png";
+import screenAnimalProfile from "../assets/images/naya/screens/animal-profile.png";
+import screenAnimalInfo from "../assets/images/naya/screens/animal-info.png";
+import screenConsultationsList from "../assets/images/naya/screens/consultations-list.png";
+import screenConsultationDetails from "../assets/images/naya/screens/consultation-details.png";
+import screenMedicalHistoryDetails from "../assets/images/naya/screens/medical-history-details.png";
+import screenTreatmentDetails from "../assets/images/naya/screens/treatment-details.png";
+import screenVaccineDetails from "../assets/images/naya/screens/vaccine-details.png";
+import screenAllergyDetails from "../assets/images/naya/screens/allergy-details.png";
+import screenPrescriptionDetails from "../assets/images/naya/screens/prescription-details.png";
+import {
+  Target02Icon,
+  Search01Icon,
+  PaintBoardIcon,
+  PuzzleIcon,
+  PenTool03Icon,
+  SourceCodeIcon,
+  UserGroupIcon,
+  IterationCcwIcon,
+} from "@hugeicons/core-free-icons";
 
 export interface ProjectMeta {
   roles: string[];
@@ -75,6 +97,7 @@ export interface Project {
   /** Shows the "Direction artistique" section (logo, color palette,
    * typography specimen, icon set) — bespoke content, currently Naya only. */
   hasDirectionArtistique?: boolean;
+  directionArtistiqueText?: string;
   /** The project page's "Design system" section (title + write-up, above
    * the token construction visual). */
   designSystemSection?: {
@@ -118,25 +141,25 @@ const DEFAULT_INTRO: { project: ProjectIntroCard; context: ProjectIntroCard } =
 // "Cadrage" section until each project gets its own specific write-up.
 const DEFAULT_PROCESS_STEPS: ProcessStep[] = [
   {
-    number: "01",
+    icon: Target02Icon,
     title: "Cadrage & Objectifs",
     description:
       "Définir le périmètre du projet, poser les intentions et les objectifs avant toute décision visuelle.",
   },
   {
-    number: "02",
+    icon: PaintBoardIcon,
     title: "Identité & Univers",
     description:
       "Création de la charte graphique et construction de l'univers visuel, la base qui donne le ton à tout le reste.",
   },
   {
-    number: "03",
+    icon: PuzzleIcon,
     title: "Navigation & Flows",
     description:
       "Conception de l'architecture de navigation et des flows pour définir comment les écrans s'articulent entre eux.",
   },
   {
-    number: "04",
+    icon: SourceCodeIcon,
     title: "Design & Prototypage",
     description:
       "Création des écrans, des assets, et vibe coding du prototype pour faire vivre l'application.",
@@ -198,8 +221,23 @@ export const projects: Project[] = [
     ],
     targetUsers:
       "Comment améliorer la communication entre vétérinaires et propriétaires d'animaux ?",
-    screens: [{ image: "" }, { image: "" }],
+    screens: [
+      { image: screenSplash },
+      { image: screenHome },
+      { image: screenHealth },
+      { image: screenAnimalProfile },
+      { image: screenAnimalInfo },
+      { image: screenAllergyDetails },
+      { image: screenMedicalHistoryDetails },
+      { image: screenVaccineDetails },
+      { image: screenTreatmentDetails },
+      { image: screenConsultationsList },
+      { image: screenConsultationDetails },
+      { image: screenPrescriptionDetails },
+    ],
     hasDirectionArtistique: true,
+    directionArtistiqueText:
+      "Là où les autres marques adoptent une identité classique du domaine de la santé, NAYA se démarque en mettant en avant son lien affectif. Une couleur chaude, des formes plus douces, un ton de voix plus affectueux. Une manière de rappeler que derrière chaque donnée de santé, il y a une relation, pas juste un dossier.",
     intro: {
       project: {
         title: "Projet",
@@ -214,49 +252,49 @@ export const projects: Project[] = [
     },
     processSteps: [
       {
-        number: "01",
+        icon: Target02Icon,
         title: "Cadrage",
         description:
           "Définir le périmètre du concept, identifier les cibles et poser les bases du projet.",
       },
       {
-        number: "02",
+        icon: Search01Icon,
         title: "Recherche",
         description:
           "Procéder à un benchmark concurrentiel, étudier le public cible et les cas d'usage. Définir le scope MVP.",
       },
       {
-        number: "03",
+        icon: PaintBoardIcon,
         title: "Direction artistique",
         description:
           "Construction de l'identité de marque : nom, logo, univers visuel.",
       },
       {
-        number: "04",
+        icon: PuzzleIcon,
         title: "Design system",
         description:
           "Mise en place des fondations visuelles : couleurs, typographies, composants réutilisables.",
       },
       {
-        number: "05",
+        icon: PenTool03Icon,
         title: "Design des écrans",
         description:
           "Mise en place de l'arborescence et des userflows, conception des écrans.",
       },
       {
-        number: "06",
+        icon: SourceCodeIcon,
         title: "Prototype",
         description:
           "Vibe coding du prototype hi-fi totalement fonctionnel sur mobile.",
       },
       {
-        number: "07",
+        icon: UserGroupIcon,
         title: "Tests",
         description:
           "Définition des utilisateurs à interviewer, conception de la trame de test et des scénarios à vérifier. Organiser les tests, traiter et synthétiser les résultats.",
       },
       {
-        number: "08",
+        icon: IterationCcwIcon,
         title: "Itérations",
         description: "Ajuster l'application en fonction des retours.",
       },

@@ -521,7 +521,7 @@ export function Home() {
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {processSteps.map((step, index) => (
             <motion.div
-              key={step.number}
+              key={step.title}
               {...useScrollReveal({
                 exiting: isExiting,
                 exitDelay: PROCESS_EXIT_DELAY,

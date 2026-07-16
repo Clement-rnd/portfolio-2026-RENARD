@@ -14,6 +14,7 @@ import { ProcessTimeline } from "../components/ProcessTimeline";
 import { ProjectCard } from "../components/ProjectCard";
 import { ProjectIntroCard } from "../components/ProjectIntroCard";
 import { RevealChars } from "../components/RevealChars";
+import { ScreensCarousel } from "../components/ScreensCarousel";
 import { SitemapTree } from "../components/SitemapTree";
 import { Squircle } from "../components/Squircle";
 import { TargetUserCarousel } from "../components/TargetUserCarousel";
@@ -88,8 +89,10 @@ export function ProjectPage() {
   const TARGET_USER_PERSONAS_EXIT_DELAY = EXIT_SECTION_STAGGER * 6;
   const TARGET_USERS_EXIT_DELAY = EXIT_SECTION_STAGGER * 7;
   const DA_EXIT_DELAY = EXIT_SECTION_STAGGER * 8;
-  const SITEMAP_EXIT_DELAY = EXIT_SECTION_STAGGER * 9;
-  const DESIGN_SYSTEM_EXIT_DELAY = EXIT_SECTION_STAGGER * 10;
+  const DA_CARD_EXIT_DELAY = EXIT_SECTION_STAGGER * 9;
+  const SITEMAP_EXIT_DELAY = EXIT_SECTION_STAGGER * 10;
+  const SCREENS_EXIT_DELAY = EXIT_SECTION_STAGGER * 11;
+  const DESIGN_SYSTEM_EXIT_DELAY = EXIT_SECTION_STAGGER * 12;
   const targetUsersRef = useRef(null);
   const isTargetUsersInView = useInView(targetUsersRef, {
     once: true,
@@ -370,6 +373,32 @@ export function ProjectPage() {
             exitDelay={DA_EXIT_DELAY}
             className={animatedSectionTitleClassName}
           />
+          <motion.div
+            {...useScrollReveal({
+              y: 40,
+              duration: 0.5,
+              amount: 0.2,
+              exiting: isExiting,
+              exitDelay: DA_CARD_EXIT_DELAY,
+            })}
+          >
+            <Squircle
+              cornerRadius={8}
+              cornerSmoothing={1}
+              borderColor="#F0EFEF"
+              fill="#FCFCFC"
+              className="w-full"
+            >
+              <div className="flex flex-col gap-4 p-6">
+                <h3 className="font-casta text-xl font-bold leading-tight text-heading">
+                  Positionnement de la marque
+                </h3>
+                <p className="text-lg font-medium text-body">
+                  {project.directionArtistiqueText}
+                </p>
+              </div>
+            </Squircle>
+          </motion.div>
           <DirectionArtistique exiting={isExiting} exitDelay={DA_EXIT_DELAY} />
         </section>
       )}
@@ -386,6 +415,25 @@ export function ProjectPage() {
             className={animatedSectionTitleClassName}
           />
           <SitemapTree categories={project.sitemap} />
+        </section>
+      )}
+
+      {project.screens && project.screens.length > 0 && (
+        <section className="flex flex-col gap-6 py-12">
+          <AnimatedHeading
+            text="Écrans"
+            as="h2"
+            stagger={SECTION_TITLE_STAGGER}
+            duration={SECTION_TITLE_DURATION}
+            exiting={isExiting}
+            exitDelay={SCREENS_EXIT_DELAY}
+            className={animatedSectionTitleClassName}
+          />
+          <ScreensCarousel
+            screens={project.screens.map((screen) => screen.image)}
+            exiting={isExiting}
+            exitDelay={SCREENS_EXIT_DELAY}
+          />
         </section>
       )}
 

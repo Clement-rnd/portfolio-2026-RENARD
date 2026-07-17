@@ -15,6 +15,7 @@ export interface SitemapTreeProps {
 
 const ITEM_STAGGER = 0.12;
 const ITEM_DURATION = 0.4;
+const BLOCK_STAGGER = 0.2;
 
 // Same branch markup (category pill -> items with a vertical guide line ->
 // children) reused for both breakpoints — only the outer container changes
@@ -22,10 +23,22 @@ const ITEM_DURATION = 0.4;
 // (desktop, one per category). The pill, the line, and every item share one
 // `isInView` trigger (instead of each independently entering the viewport)
 // so the cascade reads as "category appears, then its items one by one"
-// rather than several near-simultaneous triggers.
-function CategoryBranch({ category }: { category: SitemapCategory }) {
+// rather than several near-simultaneous triggers. On desktop `isInView` and
+// `delay` are passed down from the row so every column shares one trigger
+// but starts its own cascade block by block, left to right; on mobile each
+// branch still watches its own viewport entry (delay stays 0).
+function CategoryBranch({
+  category,
+  isInView: isInViewOverride,
+  delay = 0,
+}: {
+  category: SitemapCategory;
+  isInView?: boolean;
+  delay?: number;
+}) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.3 });
+  const ownIsInView = useInView(ref, { once: true, amount: 0.3 });
+  const isInView = isInViewOverride ?? ownIsInView;
   const lineDuration = category.items.length * ITEM_STAGGER + ITEM_DURATION;
 
   return (
@@ -33,7 +46,7 @@ function CategoryBranch({ category }: { category: SitemapCategory }) {
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={isInView ? { opacity: 1, y: 0 } : undefined}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        transition={{ duration: 0.5, delay, ease: "easeOut" }}
         className="w-fit"
       >
         <Squircle
@@ -59,7 +72,7 @@ function CategoryBranch({ category }: { category: SitemapCategory }) {
           className="absolute top-0 bottom-0 left-0 w-px origin-top bg-neutral-200"
           initial={{ scaleY: 0 }}
           animate={isInView ? { scaleY: 1 } : undefined}
-          transition={{ duration: lineDuration, ease: "easeOut" }}
+          transition={{ duration: lineDuration, delay, ease: "easeOut" }}
         />
         {category.items.map((item, index) => (
           <motion.div
@@ -68,7 +81,7 @@ function CategoryBranch({ category }: { category: SitemapCategory }) {
             animate={isInView ? { opacity: 1, y: 0 } : undefined}
             transition={{
               duration: ITEM_DURATION,
-              delay: index * ITEM_STAGGER,
+              delay: delay + index * ITEM_STAGGER,
               ease: "easeOut",
             }}
             className="flex flex-col gap-2"
@@ -84,7 +97,7 @@ function CategoryBranch({ category }: { category: SitemapCategory }) {
               </span>
             </div>
             {item.children && item.children.length > 0 && (
-              <div className="ml-2 flex flex-col gap-1 border-l border-neutral-100 pl-4">
+              <div className="ml-2 flex flex-col gap-1 border-l border-neutral-200 pl-4">
                 {item.children.map((child) => (
                   <span
                     key={child}
@@ -108,6 +121,9 @@ function CategoryBranch({ category }: { category: SitemapCategory }) {
 }
 
 export function SitemapTree({ categories }: SitemapTreeProps) {
+  const desktopRef = useRef(null);
+  const isDesktopInView = useInView(desktopRef, { once: true, amount: 0.2 });
+
   return (
     <>
       {/* Mobile: categories stacked top to bottom. */}
@@ -117,11 +133,22 @@ export function SitemapTree({ categories }: SitemapTreeProps) {
         ))}
       </div>
 
-      {/* Desktop: same branch, laid out left to right instead. */}
-      <div className="hidden items-start gap-10 overflow-x-auto pb-4 md:flex">
-        {categories.map((category) => (
-          <div key={category.label} className="shrink-0">
-            <CategoryBranch category={category} />
+      {/* Desktop: same branch, laid out left to right instead, spread
+          across the full width rather than clustered on the left. All
+          columns share one trigger but cascade left to right. Wraps to
+          the next line (rather than squeezing/clipping) once there's no
+          longer room for every column on one row, e.g. on tablet. */}
+      <div
+        ref={desktopRef}
+        className="hidden flex-wrap items-start gap-10 md:flex"
+      >
+        {categories.map((category, index) => (
+          <div key={category.label} className="min-w-56 flex-1">
+            <CategoryBranch
+              category={category}
+              isInView={isDesktopInView}
+              delay={index * BLOCK_STAGGER}
+            />
           </div>
         ))}
       </div>

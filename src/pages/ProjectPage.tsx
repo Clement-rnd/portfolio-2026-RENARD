@@ -1,5 +1,5 @@
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   Idea01Icon,
@@ -7,22 +7,31 @@ import {
   UserIcon,
 } from "@hugeicons/core-free-icons";
 import { AnimatedHeading } from "../components/AnimatedHeading";
+import { DesignSystemSegmentedControl } from "../components/DesignSystemSegmentedControl";
+import type { DesignSystemView } from "../components/DesignSystemSegmentedControl";
 import { DesignTokenFlow } from "../components/DesignTokenFlow";
+import { FigmaFileTree } from "../components/FigmaFileTree";
 import { DirectionArtistique } from "../components/DirectionArtistique";
 import { PersonaBubble } from "../components/PersonaBubble";
 import { ProcessTimeline } from "../components/ProcessTimeline";
 import { ProjectCard } from "../components/ProjectCard";
 import { ProjectIntroCard } from "../components/ProjectIntroCard";
 import { RevealChars } from "../components/RevealChars";
+import { RevealWords } from "../components/RevealWords";
 import { ScreensCarousel } from "../components/ScreensCarousel";
 import { SitemapTree } from "../components/SitemapTree";
 import { Squircle } from "../components/Squircle";
 import { TargetUserCarousel } from "../components/TargetUserCarousel";
 import { projects } from "../data/projects";
 import { useEntranceReveal } from "../hooks/useEntranceReveal";
+import { useIsDesktop } from "../hooks/useIsDesktop";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import { usePageTransition } from "../lib/PageTransitionContext";
-import { EXIT_SECTION_STAGGER } from "../lib/exitTransition";
+import {
+  EXIT_DISTANCE,
+  EXIT_DURATION,
+  EXIT_SECTION_STAGGER,
+} from "../lib/exitTransition";
 import {
   PROJECT_BASELINE_CHAR_DURATION,
   PROJECT_BASELINE_STAGGER,
@@ -66,6 +75,8 @@ export function ProjectPage() {
   const { isExiting } = usePageTransition();
   const { slug } = useParams<{ slug: string }>();
   const project = projects.find((p) => p.slug === slug);
+  const [designSystemView, setDesignSystemView] =
+    useState<DesignSystemView>("design-system");
 
   if (!project) {
     return (
@@ -97,6 +108,43 @@ export function ProjectPage() {
   const isTargetUsersInView = useInView(targetUsersRef, {
     once: true,
     amount: 0.2,
+  });
+  const daTextRef = useRef(null);
+  const isDaTextInView = useInView(daTextRef, { once: true, amount: 0.2 });
+  const isDesktop = useIsDesktop();
+  const introRef = useRef(null);
+  const isIntroInView = useInView(introRef, {
+    once: true,
+    margin: "0px 0px -20% 0px",
+  });
+  const bubblesRef = useRef(null);
+  const isBubblesInView = useInView(bubblesRef, { once: true, amount: 0.2 });
+  // Desktop: cards and bubbles sit side by side, so they share one trigger
+  // and start together. Mobile: bubbles are stacked far below the cards, so
+  // sharing the cards' trigger would "complete" their reveal off-screen
+  // before the user ever scrolls to see it — they need their own trigger.
+  const isBubblesRevealInView = isDesktop ? isIntroInView : isBubblesInView;
+  const introReveal = (delay: number, exitDelay: number) => ({
+    initial: { opacity: 0, y: 40 },
+    animate: isExiting
+      ? { opacity: 0, y: -EXIT_DISTANCE }
+      : isIntroInView
+        ? { opacity: 1, y: 0 }
+        : undefined,
+    transition: isExiting
+      ? ({ duration: EXIT_DURATION, delay: exitDelay, ease: "easeOut" } as const)
+      : ({ duration: 0.5, delay, ease: "easeOut" } as const),
+  });
+  const bubbleReveal = (delay: number, exitDelay: number) => ({
+    initial: { opacity: 0, y: 40 },
+    animate: isExiting
+      ? { opacity: 0, y: -EXIT_DISTANCE }
+      : isBubblesRevealInView
+        ? { opacity: 1, y: 0 }
+        : undefined,
+    transition: isExiting
+      ? ({ duration: EXIT_DURATION, delay: exitDelay, ease: "easeOut" } as const)
+      : ({ duration: 0.5, delay, ease: "easeOut" } as const),
   });
   const specsRevealProps = (index: number) =>
     useScrollReveal({
@@ -174,7 +222,7 @@ export function ProjectPage() {
           {...specsRevealProps(0)}
           className="hidden border-neutral-200 md:block"
         />
-        <div className="flex flex-col gap-12 md:flex-row">
+        <div className="flex flex-col gap-12 md:flex-row md:justify-between">
           {project.overviewType && (
             <motion.div {...specsRevealProps(1)} className="flex flex-col gap-2">
               <h6 className={overviewLabelClassName}>Type</h6>
@@ -257,65 +305,42 @@ export function ProjectPage() {
             exitDelay={INTRO_EXIT_DELAY}
             className={animatedSectionTitleClassName}
           />
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <motion.div
-              {...useScrollReveal({
-                y: 40,
-                duration: 0.5,
-                delay: 0,
-                amount: 0.3,
-                exiting: isExiting,
-                exitDelay: INTRO_EXIT_DELAY,
-              })}
-            >
-              <ProjectIntroCard
-                icon={Target01Icon}
-                title={project.intro.project.title}
-                description={project.intro.project.description}
-              />
-            </motion.div>
-            <motion.div
-              {...useScrollReveal({
-                y: 40,
-                duration: 0.5,
-                delay: 0.1,
-                amount: 0.3,
-                exiting: isExiting,
-                exitDelay: INTRO_EXIT_DELAY,
-              })}
-            >
-              <ProjectIntroCard
-                icon={Idea01Icon}
-                title={project.intro.context.title}
-                description={project.intro.context.description}
-              />
-            </motion.div>
+          <div
+            ref={introRef}
+            className="grid grid-cols-1 gap-10 md:grid-cols-2 md:items-center md:gap-6"
+          >
+            <div className="flex flex-col gap-6">
+              <motion.div {...introReveal(0, INTRO_EXIT_DELAY)}>
+                <ProjectIntroCard
+                  icon={Target01Icon}
+                  title={project.intro.project.title}
+                  description={project.intro.project.description}
+                />
+              </motion.div>
+              <motion.div {...introReveal(0.2, INTRO_EXIT_DELAY)}>
+                <ProjectIntroCard
+                  icon={Idea01Icon}
+                  title={project.intro.context.title}
+                  description={project.intro.context.description}
+                />
+              </motion.div>
+            </div>
+            <div ref={bubblesRef} className="flex flex-col gap-10">
+              {PERSONA_BUBBLES.map((persona, index) => (
+                <motion.div
+                  key={index}
+                  {...bubbleReveal(index * 0.25, PERSONAS_EXIT_DELAY)}
+                  className={`flex ${persona.align === "right" ? "justify-end" : "justify-start"}`}
+                >
+                  <PersonaBubble
+                    icon={UserIcon}
+                    text={persona.text}
+                    align={persona.align}
+                  />
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </section>
-      )}
-
-      {project.intro && (
-        <section className="flex flex-col gap-10 py-12">
-          {PERSONA_BUBBLES.map((persona, index) => (
-            <motion.div
-              key={index}
-              {...useScrollReveal({
-                y: 40,
-                duration: 0.5,
-                delay: index * 0.1,
-                amount: 0.3,
-                exiting: isExiting,
-                exitDelay: PERSONAS_EXIT_DELAY,
-              })}
-              className={`flex ${persona.align === "right" ? "justify-end" : "justify-start"}`}
-            >
-              <PersonaBubble
-                icon={UserIcon}
-                text={persona.text}
-                align={persona.align}
-              />
-            </motion.div>
-          ))}
         </section>
       )}
 
@@ -330,17 +355,11 @@ export function ProjectPage() {
             exitDelay={TARGET_USER_PERSONAS_EXIT_DELAY}
             className={animatedSectionTitleClassName}
           />
-          <motion.div
-            {...useScrollReveal({
-              y: 40,
-              duration: 0.5,
-              amount: 0.2,
-              exiting: isExiting,
-              exitDelay: TARGET_USER_PERSONAS_EXIT_DELAY,
-            })}
-          >
-            <TargetUserCarousel personas={project.targetUserPersonas} />
-          </motion.div>
+          <TargetUserCarousel
+            personas={project.targetUserPersonas}
+            exiting={isExiting}
+            exitDelay={TARGET_USER_PERSONAS_EXIT_DELAY}
+          />
         </section>
       )}
 
@@ -373,32 +392,16 @@ export function ProjectPage() {
             exitDelay={DA_EXIT_DELAY}
             className={animatedSectionTitleClassName}
           />
-          <motion.div
-            {...useScrollReveal({
-              y: 40,
-              duration: 0.5,
-              amount: 0.2,
-              exiting: isExiting,
-              exitDelay: DA_CARD_EXIT_DELAY,
-            })}
-          >
-            <Squircle
-              cornerRadius={8}
-              cornerSmoothing={1}
-              borderColor="#F0EFEF"
-              fill="#FCFCFC"
-              className="w-full"
-            >
-              <div className="flex flex-col gap-4 p-6">
-                <h3 className="font-casta text-xl font-bold leading-tight text-heading">
-                  Positionnement de la marque
-                </h3>
-                <p className="text-lg font-medium text-body">
-                  {project.directionArtistiqueText}
-                </p>
-              </div>
-            </Squircle>
-          </motion.div>
+          <p ref={daTextRef} className="max-w-2xl text-lg font-medium text-body">
+            <RevealWords
+              words={project.directionArtistiqueText ?? ""}
+              trigger={isDaTextInView}
+              exiting={isExiting}
+              exitDelay={DA_CARD_EXIT_DELAY}
+              stagger={0.02}
+              duration={0.4}
+            />
+          </p>
           <DirectionArtistique exiting={isExiting} exitDelay={DA_EXIT_DELAY} />
         </section>
       )}
@@ -406,7 +409,7 @@ export function ProjectPage() {
       {project.sitemap && project.sitemap.length > 0 && (
         <section className="flex flex-col gap-6 py-12">
           <AnimatedHeading
-            text="Arborescence"
+            text="Conception"
             as="h2"
             stagger={SECTION_TITLE_STAGGER}
             duration={SECTION_TITLE_DURATION}
@@ -420,15 +423,6 @@ export function ProjectPage() {
 
       {project.screens && project.screens.length > 0 && (
         <section className="flex flex-col gap-6 py-12">
-          <AnimatedHeading
-            text="Écrans"
-            as="h2"
-            stagger={SECTION_TITLE_STAGGER}
-            duration={SECTION_TITLE_DURATION}
-            exiting={isExiting}
-            exitDelay={SCREENS_EXIT_DELAY}
-            className={animatedSectionTitleClassName}
-          />
           <ScreensCarousel
             screens={project.screens.map((screen) => screen.image)}
             exiting={isExiting}
@@ -448,18 +442,48 @@ export function ProjectPage() {
             exitDelay={DESIGN_SYSTEM_EXIT_DELAY}
             className={animatedSectionTitleClassName}
           />
-          <motion.p
+          <div className="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-6">
+            <motion.p
+              {...useScrollReveal({
+                y: 40,
+                duration: 0.5,
+                amount: 0.3,
+                exiting: isExiting,
+                exitDelay: DESIGN_SYSTEM_EXIT_DELAY,
+              })}
+              className="max-w-2xl text-lg font-medium text-body"
+            >
+              {project.designSystemSection.description}
+            </motion.p>
+            <motion.div
+              {...useScrollReveal({
+                y: 40,
+                duration: 0.5,
+                delay: 0.05,
+                amount: 0.2,
+                exiting: isExiting,
+                exitDelay: DESIGN_SYSTEM_EXIT_DELAY,
+              })}
+            >
+              <FigmaFileTree />
+            </motion.div>
+          </div>
+          <motion.div
             {...useScrollReveal({
               y: 40,
               duration: 0.5,
+              delay: 0.1,
               amount: 0.3,
               exiting: isExiting,
               exitDelay: DESIGN_SYSTEM_EXIT_DELAY,
             })}
-            className="max-w-2xl text-lg font-medium text-body"
+            className="mt-12 md:flex md:justify-center"
           >
-            {project.designSystemSection.description}
-          </motion.p>
+            <DesignSystemSegmentedControl
+              value={designSystemView}
+              onChange={setDesignSystemView}
+            />
+          </motion.div>
           {project.designTokenFlow && (
             <motion.div
               {...useScrollReveal({

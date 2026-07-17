@@ -1,15 +1,29 @@
 import { useCallback, useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
 import type { TargetUserPersona } from "../data/projects";
+import { EXIT_DISTANCE, EXIT_DURATION } from "../lib/exitTransition";
 import { TargetUserCard } from "./TargetUserCard";
 
 export interface TargetUserCarouselProps {
   personas: TargetUserPersona[];
+  exiting?: boolean;
+  exitDelay?: number;
 }
 
-export function TargetUserCarousel({ personas }: TargetUserCarouselProps) {
+const CARD_STAGGER = 0.2;
+
+export function TargetUserCarousel({
+  personas,
+  exiting = false,
+  exitDelay = 0,
+}: TargetUserCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const gridRef = useRef(null);
+  const isGridInView = useInView(gridRef, { once: true, amount: 0.2 });
+  const mobileRef = useRef(null);
+  const isMobileInView = useInView(mobileRef, { once: true, amount: 0.2 });
 
   const updateActiveIndex = useCallback(() => {
     const container = scrollRef.current;
@@ -32,7 +46,23 @@ export function TargetUserCarousel({ personas }: TargetUserCarouselProps) {
   return (
     <>
       {/* Mobile: full-width swipeable carousel with pagination dots. */}
-      <div className="flex flex-col gap-6 md:hidden">
+      <motion.div
+        ref={mobileRef}
+        initial={{ opacity: 0, y: 40 }}
+        animate={
+          exiting
+            ? { opacity: 0, y: -EXIT_DISTANCE }
+            : isMobileInView
+              ? { opacity: 1, y: 0 }
+              : undefined
+        }
+        transition={
+          exiting
+            ? { duration: EXIT_DURATION, delay: exitDelay, ease: "easeOut" }
+            : { duration: 0.5, ease: "easeOut" }
+        }
+        className="flex flex-col gap-6 md:hidden"
+      >
         <div
           ref={scrollRef}
           onScroll={updateActiveIndex}
@@ -75,17 +105,41 @@ export function TargetUserCarousel({ personas }: TargetUserCarouselProps) {
             />
           ))}
         </div>
-      </div>
+      </motion.div>
 
-      {/* Desktop: plain 2x2 grid, no carousel/dots. */}
-      <div className="hidden md:grid md:grid-cols-2 md:gap-6">
-        {personas.map((persona) => (
-          <TargetUserCard
+      {/* Desktop: plain 2x2 grid, no carousel/dots, each card revealed
+          individually rather than the whole grid at once. */}
+      <div
+        ref={gridRef}
+        className="hidden md:grid md:grid-cols-2 md:gap-6"
+      >
+        {personas.map((persona, index) => (
+          <motion.div
             key={persona.title}
-            title={persona.title}
-            context={persona.context}
-            needs={persona.needs}
-          />
+            initial={{ opacity: 0, y: 40 }}
+            animate={
+              exiting
+                ? { opacity: 0, y: -EXIT_DISTANCE }
+                : isGridInView
+                  ? { opacity: 1, y: 0 }
+                  : undefined
+            }
+            transition={
+              exiting
+                ? { duration: EXIT_DURATION, delay: exitDelay, ease: "easeOut" }
+                : {
+                    duration: 0.5,
+                    delay: index * CARD_STAGGER,
+                    ease: "easeOut",
+                  }
+            }
+          >
+            <TargetUserCard
+              title={persona.title}
+              context={persona.context}
+              needs={persona.needs}
+            />
+          </motion.div>
         ))}
       </div>
     </>

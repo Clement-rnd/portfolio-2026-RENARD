@@ -17,6 +17,7 @@ import {
   ChevronRightIcon,
   File01Icon,
   Flag03Icon,
+  Settings01Icon,
 } from "@hugeicons/core-free-icons";
 import nayaLogo from "../assets/images/naya/logo-black.svg";
 import nayaTypographySpecimen from "../assets/images/naya/typography-specimen.svg";
@@ -31,7 +32,7 @@ export interface DirectionArtistiqueProps {
 const PALETTE = ["#fdf7f9", "#ff5a7d", "#0b0a0a"];
 
 // Representative sample of the Hugeicons set used across the project —
-// stands in for the full icon library preview. Exactly 15 (3 rows of 5).
+// stands in for the full icon library preview. Exactly 16 (2 rows of 8).
 const ICON_SAMPLE = [
   Home01Icon,
   Bookmark02Icon,
@@ -48,9 +49,10 @@ const ICON_SAMPLE = [
   ChevronRightIcon,
   File01Icon,
   Flag03Icon,
+  Settings01Icon,
 ];
 
-const ICONS_PER_ROW = 5;
+const ICON_ROWS = [6, 6, 4];
 
 const COLUMN_STAGGER = 0.1;
 const ROW_STAGGER = 0.08;
@@ -59,11 +61,18 @@ const DURATION = 0.5;
 const ICON_DURATION = 0.3;
 const HUGEICONS_LOGO_DELAY = 0;
 const ICONS_START_DELAY = HUGEICONS_LOGO_DELAY + 0.15;
-const iconItemDelay = (index: number) => {
-  const row = Math.floor(index / ICONS_PER_ROW);
-  const col = index % ICONS_PER_ROW;
-  return ICONS_START_DELAY + row * ROW_STAGGER + col * ICON_ITEM_STAGGER;
-};
+const iconItemDelay = (row: number, col: number) =>
+  ICONS_START_DELAY + row * ROW_STAGGER + col * ICON_ITEM_STAGGER;
+
+function chunkIcons() {
+  const rows: (typeof ICON_SAMPLE)[] = [];
+  let offset = 0;
+  for (const size of ICON_ROWS) {
+    rows.push(ICON_SAMPLE.slice(offset, offset + size));
+    offset += size;
+  }
+  return rows;
+}
 
 // Each block gets its own scroll trigger (not one shared for the whole,
 // often very tall, section) — otherwise a block far down the page (the
@@ -100,7 +109,7 @@ export function DirectionArtistique({
   const icons = useBlockReveal(exiting, exitDelay);
 
   return (
-    <div className="flex flex-col gap-16">
+    <div className="grid grid-cols-1 gap-16 md:grid-cols-2 md:items-center">
       <motion.img
         ref={logo.ref}
         {...logo.reveal(0)}
@@ -114,7 +123,7 @@ export function DirectionArtistique({
           <motion.span
             key={hex}
             {...palette.reveal(index * COLUMN_STAGGER)}
-            className="h-10 w-[60px] shrink-0 rounded-lg drop-shadow-md"
+            className="h-16 w-20 shrink-0 rounded-lg drop-shadow-md"
             style={{ backgroundColor: hex }}
           />
         ))}
@@ -125,7 +134,7 @@ export function DirectionArtistique({
         {...typography.reveal(0)}
         src={nayaTypographySpecimen}
         alt="Spécimen typographique Massilia"
-        className="mx-auto h-auto w-full max-w-xl"
+        className="mx-auto h-auto w-full max-w-[25rem]"
       />
 
       <div ref={icons.ref} className="flex flex-col gap-4">
@@ -136,15 +145,22 @@ export function DirectionArtistique({
           className="mx-auto h-6 w-auto"
         />
 
-        <div className="grid w-full grid-cols-5 gap-2">
-          {ICON_SAMPLE.map((icon, index) => (
-            <motion.div
-              key={index}
-              {...icons.reveal(iconItemDelay(index), ICON_DURATION)}
-              className="flex aspect-square items-center justify-center rounded-lg bg-[#FCFCFC] text-heading"
-            >
-              <HugeiconsIcon icon={icon} size={32} />
-            </motion.div>
+        <div className="flex flex-col gap-1">
+          {chunkIcons().map((row, rowIndex) => (
+            <div key={rowIndex} className="flex justify-center gap-1">
+              {row.map((icon, colIndex) => (
+                <motion.div
+                  key={colIndex}
+                  {...icons.reveal(
+                    iconItemDelay(rowIndex, colIndex),
+                    ICON_DURATION,
+                  )}
+                  className="flex aspect-square w-14 shrink-0 items-center justify-center rounded-lg bg-[#FCFCFC] text-heading"
+                >
+                  <HugeiconsIcon icon={icon} size={32} />
+                </motion.div>
+              ))}
+            </div>
           ))}
         </div>
       </div>

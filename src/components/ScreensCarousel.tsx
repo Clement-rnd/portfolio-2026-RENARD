@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
+import { EXIT_DISTANCE, EXIT_DURATION } from "../lib/exitTransition";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 
 export interface ScreensCarouselProps {
@@ -18,6 +19,8 @@ export function ScreensCarousel({
   const scrollRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const gridRef = useRef(null);
+  const isGridInView = useInView(gridRef, { once: true, amount: 0.2 });
 
   const updateActiveIndex = useCallback(() => {
     const container = scrollRef.current;
@@ -89,19 +92,30 @@ export function ScreensCarousel({
       {/* Desktop: no swipe, screens laid out one after another, each
           revealed individually (not the whole block at once). Fixed
           6-column grid (ceil(11/2)) so any container width still wraps
-          into exactly 2 rows. */}
-      <div className="hidden md:grid md:grid-cols-6 md:gap-6">
+          into exactly 2 rows. All rows share one trigger so the second
+          row's cascade continues right after the first instead of
+          waiting to individually scroll into view. */}
+      <div ref={gridRef} className="hidden md:grid md:grid-cols-6 md:gap-6">
         {screens.map((screen, index) => (
           <motion.img
             key={screen}
-            {...useScrollReveal({
-              y: 40,
-              duration: 0.5,
-              delay: index * SCREEN_STAGGER,
-              amount: 0.2,
-              exiting,
-              exitDelay,
-            })}
+            initial={{ opacity: 0, y: 40 }}
+            animate={
+              exiting
+                ? { opacity: 0, y: -EXIT_DISTANCE }
+                : isGridInView
+                  ? { opacity: 1, y: 0 }
+                  : undefined
+            }
+            transition={
+              exiting
+                ? { duration: EXIT_DURATION, delay: exitDelay, ease: "easeOut" }
+                : {
+                    duration: 0.5,
+                    delay: index * SCREEN_STAGGER,
+                    ease: "easeOut",
+                  }
+            }
             src={screen}
             alt=""
             className="h-auto w-full rounded-2xl drop-shadow-md"

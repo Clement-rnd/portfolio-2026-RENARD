@@ -39,7 +39,11 @@ function CategoryBranch({
   const ref = useRef(null);
   const ownIsInView = useInView(ref, { once: true, amount: 0.3 });
   const isInView = isInViewOverride ?? ownIsInView;
-  const lineDuration = category.items.length * ITEM_STAGGER + ITEM_DURATION;
+  const itemCount = category.items.reduce(
+    (sum, item) => sum + 1 + (item.children?.length ?? 0),
+    0,
+  );
+  const lineDuration = itemCount * ITEM_STAGGER + ITEM_DURATION;
 
   return (
     <div ref={ref} className="flex flex-col gap-3">
@@ -74,47 +78,60 @@ function CategoryBranch({
           animate={isInView ? { scaleY: 1 } : undefined}
           transition={{ duration: lineDuration, delay, ease: "easeOut" }}
         />
-        {category.items.map((item, index) => (
-          <motion.div
-            key={item.label}
-            initial={{ opacity: 0, y: 16 }}
-            animate={isInView ? { opacity: 1, y: 0 } : undefined}
-            transition={{
-              duration: ITEM_DURATION,
-              delay: delay + index * ITEM_STAGGER,
-              ease: "easeOut",
-            }}
-            className="flex flex-col gap-2"
-          >
-            <div className="flex items-center gap-2">
-              <HugeiconsIcon
-                icon={ChevronRightIcon}
-                size={16}
-                className="shrink-0 text-body"
-              />
-              <span className="text-sm font-medium text-heading whitespace-nowrap">
-                {item.label}
-              </span>
-            </div>
-            {item.children && item.children.length > 0 && (
-              <div className="ml-2 flex flex-col gap-1 border-l border-neutral-200 pl-4">
-                {item.children.map((child) => (
-                  <span
-                    key={child}
-                    className="flex items-center gap-1.5 text-sm text-body whitespace-nowrap"
-                  >
-                    <HugeiconsIcon
-                      icon={CornerDownRightIcon}
-                      size={14}
-                      className="shrink-0"
-                    />
-                    {child}
-                  </span>
-                ))}
+        {category.items.map((item, index) => {
+          // Each nested child continues the same stagger sequence right
+          // after its parent item, rather than popping in together with it.
+          const itemDelay = delay + index * ITEM_STAGGER;
+          return (
+            <motion.div
+              key={item.label}
+              initial={{ opacity: 0, y: 16 }}
+              animate={isInView ? { opacity: 1, y: 0 } : undefined}
+              transition={{
+                duration: ITEM_DURATION,
+                delay: itemDelay,
+                ease: "easeOut",
+              }}
+              className="flex flex-col gap-2"
+            >
+              <div className="flex items-center gap-2">
+                <HugeiconsIcon
+                  icon={ChevronRightIcon}
+                  size={16}
+                  className="shrink-0 text-body"
+                />
+                <span className="text-sm font-medium text-heading whitespace-nowrap">
+                  {item.label}
+                </span>
               </div>
-            )}
-          </motion.div>
-        ))}
+              {item.children && item.children.length > 0 && (
+                <div className="relative ml-2 flex flex-col gap-1 pl-4">
+                  <div className="absolute top-0 bottom-0 left-0 w-px bg-neutral-200" />
+                  {item.children.map((child, childIndex) => (
+                    <motion.span
+                      key={child}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={isInView ? { opacity: 1, y: 0 } : undefined}
+                      transition={{
+                        duration: ITEM_DURATION,
+                        delay: itemDelay + (childIndex + 1) * ITEM_STAGGER,
+                        ease: "easeOut",
+                      }}
+                      className="flex items-center gap-1.5 text-sm text-body whitespace-nowrap"
+                    >
+                      <HugeiconsIcon
+                        icon={CornerDownRightIcon}
+                        size={14}
+                        className="shrink-0"
+                      />
+                      {child}
+                    </motion.span>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          );
+        })}
       </div>
     </div>
   );

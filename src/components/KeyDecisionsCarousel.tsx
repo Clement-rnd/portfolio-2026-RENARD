@@ -1,31 +1,28 @@
 import { useCallback, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { EXIT_DISTANCE, EXIT_DURATION } from "../lib/exitTransition";
-import { useScrollReveal } from "../hooks/useScrollReveal";
+import { KeyDecisionCard } from "./KeyDecisionCard";
 
-export interface ScreensCarouselProps {
-  screens: string[];
+export interface KeyDecisionsCarouselProps {
+  decisions: { title: string; description: string }[];
   exiting?: boolean;
   exitDelay?: number;
-  /** Desktop grid column count. Defaults to fitting every screen on a
-   * single row; pass a smaller number (e.g. 6) to wrap onto more rows
-   * instead, like the main "Écrans" gallery does. */
-  desktopColumns?: number;
 }
 
-const SCREEN_STAGGER = 0.1;
+const CARD_STAGGER = 0.1;
 
-export function ScreensCarousel({
-  screens,
+export function KeyDecisionsCarousel({
+  decisions,
   exiting = false,
   exitDelay = 0,
-  desktopColumns = screens.length,
-}: ScreensCarouselProps) {
+}: KeyDecisionsCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const gridRef = useRef(null);
   const isGridInView = useInView(gridRef, { once: true, amount: 0.2 });
+  const mobileRef = useRef(null);
+  const isMobileInView = useInView(mobileRef, { once: true, amount: 0.2 });
 
   const updateActiveIndex = useCallback(() => {
     const container = scrollRef.current;
@@ -33,10 +30,10 @@ export function ScreensCarousel({
     const containerCenter = container.scrollLeft + container.clientWidth / 2;
     let closestIndex = 0;
     let closestDistance = Infinity;
-    itemRefs.current.forEach((item, index) => {
-      if (!item) return;
-      const itemCenter = item.offsetLeft + item.offsetWidth / 2;
-      const distance = Math.abs(itemCenter - containerCenter);
+    cardRefs.current.forEach((card, index) => {
+      if (!card) return;
+      const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+      const distance = Math.abs(cardCenter - containerCenter);
       if (distance < closestDistance) {
         closestDistance = distance;
         closestIndex = index;
@@ -47,9 +44,22 @@ export function ScreensCarousel({
 
   return (
     <>
-      {/* Mobile: full-bleed swipeable carousel with pagination dots. */}
+      {/* Mobile: full-width swipeable carousel with pagination dots. */}
       <motion.div
-        {...useScrollReveal({ y: 40, duration: 0.5, amount: 0.2, exiting, exitDelay })}
+        ref={mobileRef}
+        initial={{ opacity: 0, y: 40 }}
+        animate={
+          exiting
+            ? { opacity: 0, y: -EXIT_DISTANCE }
+            : isMobileInView
+              ? { opacity: 1, y: 0 }
+              : undefined
+        }
+        transition={
+          exiting
+            ? { duration: EXIT_DURATION, delay: exitDelay, ease: "easeOut" }
+            : { duration: 0.5, ease: "easeOut" }
+        }
         className="flex flex-col gap-6 md:hidden"
       >
         <div
@@ -57,35 +67,34 @@ export function ScreensCarousel({
           onScroll={updateActiveIndex}
           className="-mx-4 flex snap-x snap-mandatory overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {screens.map((screen, index) => (
+          {decisions.map((decision, index) => (
             <div
-              key={screen}
+              key={decision.title}
               ref={(el) => {
-                itemRefs.current[index] = el;
+                cardRefs.current[index] = el;
               }}
               className="w-screen shrink-0 snap-center px-4"
             >
-              <img
-                src={screen}
-                alt=""
-                className="h-auto w-full rounded-2xl drop-shadow-md"
+              <KeyDecisionCard
+                title={decision.title}
+                description={decision.description}
               />
             </div>
           ))}
         </div>
         <div className="flex justify-center gap-2">
-          {screens.map((screen, index) => (
+          {decisions.map((decision, index) => (
             <button
-              key={screen}
+              key={decision.title}
               type="button"
               onClick={() =>
-                itemRefs.current[index]?.scrollIntoView({
+                cardRefs.current[index]?.scrollIntoView({
                   behavior: "smooth",
                   inline: "center",
                   block: "nearest",
                 })
               }
-              aria-label={`Aller à l'écran ${index + 1}`}
+              aria-label={`Aller à la card ${index + 1}`}
               className={`h-2 rounded-full transition-all duration-300 ${
                 index === activeIndex ? "w-6 bg-heading" : "w-2 bg-neutral-200"
               }`}
@@ -94,23 +103,12 @@ export function ScreensCarousel({
         </div>
       </motion.div>
 
-      {/* Desktop: no swipe, screens laid out one after another, each
-          revealed individually (not the whole block at once). Column count
-          defaults to fitting every screen on one row; some callers pass a
-          smaller number to intentionally wrap onto more rows instead. All
-          rows share one trigger so a later row's cascade continues right
-          after the first instead of waiting to individually scroll into
-          view. */}
-      <div
-        ref={gridRef}
-        className="hidden md:grid md:gap-6"
-        style={{
-          gridTemplateColumns: `repeat(${desktopColumns}, minmax(0, 1fr))`,
-        }}
-      >
-        {screens.map((screen, index) => (
-          <motion.img
-            key={screen}
+      {/* Desktop: plain 3-column grid, no carousel/dots, each card revealed
+          individually rather than the whole grid at once. */}
+      <div ref={gridRef} className="hidden md:grid md:grid-cols-3 md:gap-6">
+        {decisions.map((decision, index) => (
+          <motion.div
+            key={decision.title}
             initial={{ opacity: 0, y: 40 }}
             animate={
               exiting
@@ -124,14 +122,16 @@ export function ScreensCarousel({
                 ? { duration: EXIT_DURATION, delay: exitDelay, ease: "easeOut" }
                 : {
                     duration: 0.5,
-                    delay: index * SCREEN_STAGGER,
+                    delay: index * CARD_STAGGER,
                     ease: "easeOut",
                   }
             }
-            src={screen}
-            alt=""
-            className="h-auto w-full rounded-2xl drop-shadow-md"
-          />
+          >
+            <KeyDecisionCard
+              title={decision.title}
+              description={decision.description}
+            />
+          </motion.div>
         ))}
       </div>
     </>

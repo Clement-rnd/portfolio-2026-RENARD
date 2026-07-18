@@ -41,39 +41,49 @@ export function RevealChars({
   stagger = 0.02,
   duration = 0.5,
 }: RevealCharsProps) {
-  const words = text.split(" ");
+  const lines = text.split("\n");
   let charIndex = 0;
 
   return (
     <span className={`inline ${className}`}>
-      {words.map((word, wordIndex) => (
-        <Fragment key={wordIndex}>
-          <span className="inline-block whitespace-nowrap">
-            {word.split("").map((char, i) => {
-              const index = charIndex++;
-              return (
-                <motion.span
-                  key={i}
-                  className={`inline-block ${charClassName}`}
-                  variants={charVariants}
-                  initial="hidden"
-                  animate={exiting ? "exiting" : trigger ? "visible" : "hidden"}
-                  transition={{
-                    duration: exiting ? EXIT_DURATION : duration,
-                    delay: exiting
-                      ? exitDelay + index * stagger
-                      : delay + index * stagger,
-                    ease: EASE_POWER3_OUT,
-                  }}
-                >
-                  {char}
-                </motion.span>
-              );
-            })}
-          </span>
-          {wordIndex < words.length - 1 ? " " : null}
-        </Fragment>
-      ))}
+      {lines.map((line, lineIndex) => {
+        const words = line.split(" ");
+        return (
+          <Fragment key={lineIndex}>
+            {lineIndex > 0 && <br />}
+            {words.map((word, wordIndex) => (
+              <Fragment key={wordIndex}>
+                <span className="inline-block whitespace-nowrap">
+                  {word.split("").map((char, i) => {
+                    const index = charIndex++;
+                    return (
+                      <motion.span
+                        key={i}
+                        className={`inline-block ${charClassName}`}
+                        variants={charVariants}
+                        initial="hidden"
+                        animate={
+                          exiting ? "exiting" : trigger ? "visible" : "hidden"
+                        }
+                        transition={{
+                          duration: exiting ? EXIT_DURATION : duration,
+                          delay: exiting
+                            ? exitDelay + index * stagger
+                            : delay + index * stagger,
+                          ease: EASE_POWER3_OUT,
+                        }}
+                      >
+                        {char}
+                      </motion.span>
+                    );
+                  })}
+                </span>
+                {wordIndex < words.length - 1 ? " " : null}
+              </Fragment>
+            ))}
+          </Fragment>
+        );
+      })}
     </span>
   );
 }

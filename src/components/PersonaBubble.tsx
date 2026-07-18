@@ -1,16 +1,14 @@
-import { HugeiconsIcon } from "@hugeicons/react";
-import type { IconSvgElement } from "@hugeicons/react";
 import { Squircle } from "./Squircle";
 
 export interface PersonaBubbleProps {
-  icon: IconSvgElement;
+  avatar: string;
   text: string;
   /** Which side the avatar sits on, bubble tail points toward it. */
   align?: "left" | "right";
 }
 
 export function PersonaBubble({
-  icon,
+  avatar,
   text,
   align = "left",
 }: PersonaBubbleProps) {
@@ -20,9 +18,11 @@ export function PersonaBubble({
     <div
       className={`flex items-center gap-4 ${isRight ? "flex-row-reverse" : ""}`}
     >
-      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#FCFCFC] text-body drop-shadow-md">
-        <HugeiconsIcon icon={icon} size={28} />
-      </div>
+      <img
+        src={avatar}
+        alt=""
+        className="h-16 w-16 shrink-0 rounded-full object-cover drop-shadow-md"
+      />
       <div className="relative drop-shadow-md">
         <Squircle
           cornerRadius={16}

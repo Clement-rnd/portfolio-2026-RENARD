@@ -18,11 +18,14 @@ import {
   File01Icon,
   Flag03Icon,
   Settings01Icon,
+  Rocket01Icon,
+  Camera01Icon,
 } from "@hugeicons/core-free-icons";
 import nayaLogo from "../assets/images/naya/logo-black.svg";
 import nayaTypographySpecimen from "../assets/images/naya/typography-specimen.svg";
 import hugeiconsLogo from "../assets/images/naya/hugeicons-logo.svg";
 import { EXIT_DISTANCE, EXIT_DURATION } from "../lib/exitTransition";
+import { Squircle } from "./Squircle";
 
 export interface DirectionArtistiqueProps {
   exiting?: boolean;
@@ -32,7 +35,7 @@ export interface DirectionArtistiqueProps {
 const PALETTE = ["#fdf7f9", "#ff5a7d", "#0b0a0a"];
 
 // Representative sample of the Hugeicons set used across the project —
-// stands in for the full icon library preview. Exactly 16 (2 rows of 8).
+// stands in for the full icon library preview. Exactly 18 (3 rows of 6).
 const ICON_SAMPLE = [
   Home01Icon,
   Bookmark02Icon,
@@ -50,9 +53,11 @@ const ICON_SAMPLE = [
   File01Icon,
   Flag03Icon,
   Settings01Icon,
+  Rocket01Icon,
+  Camera01Icon,
 ];
 
-const ICON_ROWS = [6, 6, 4];
+const ICONS_PER_ROW = 6;
 
 const COLUMN_STAGGER = 0.1;
 const ROW_STAGGER = 0.08;
@@ -61,18 +66,17 @@ const DURATION = 0.5;
 const ICON_DURATION = 0.3;
 const HUGEICONS_LOGO_DELAY = 0;
 const ICONS_START_DELAY = HUGEICONS_LOGO_DELAY + 0.15;
-const iconItemDelay = (row: number, col: number) =>
-  ICONS_START_DELAY + row * ROW_STAGGER + col * ICON_ITEM_STAGGER;
+const iconItemDelay = (index: number) => {
+  const row = Math.floor(index / ICONS_PER_ROW);
+  const col = index % ICONS_PER_ROW;
+  return ICONS_START_DELAY + row * ROW_STAGGER + col * ICON_ITEM_STAGGER;
+};
 
-function chunkIcons() {
-  const rows: (typeof ICON_SAMPLE)[] = [];
-  let offset = 0;
-  for (const size of ICON_ROWS) {
-    rows.push(ICON_SAMPLE.slice(offset, offset + size));
-    offset += size;
-  }
-  return rows;
-}
+// If the last row doesn't fill every column, shift its first icon over so
+// the row reads as centered instead of stuck to the left.
+const LAST_ROW_COUNT = ICON_SAMPLE.length % ICONS_PER_ROW || ICONS_PER_ROW;
+const LAST_ROW_START_INDEX = ICON_SAMPLE.length - LAST_ROW_COUNT;
+const LAST_ROW_COL_OFFSET = Math.floor((ICONS_PER_ROW - LAST_ROW_COUNT) / 2);
 
 // Each block gets its own scroll trigger (not one shared for the whole,
 // often very tall, section) — otherwise a block far down the page (the
@@ -109,23 +113,35 @@ export function DirectionArtistique({
   const icons = useBlockReveal(exiting, exitDelay);
 
   return (
-    <div className="grid grid-cols-1 gap-16 md:grid-cols-2 md:items-center">
+    <div className="flex flex-col gap-16 lg:flex-row lg:flex-wrap lg:items-center lg:justify-center">
       <motion.img
         ref={logo.ref}
         {...logo.reveal(0)}
         src={nayaLogo}
         alt="Logo Naya"
-        className="mx-auto mt-4 h-auto w-full max-w-[14rem]"
+        className="mx-auto mt-4 h-auto w-[50vw] lg:mx-0 lg:w-48 lg:max-w-none lg:shrink-0"
       />
 
-      <div ref={palette.ref} className="flex justify-center gap-2">
+      <div ref={palette.ref} className="flex items-start gap-2 lg:w-48 lg:shrink-0">
         {PALETTE.map((hex, index) => (
-          <motion.span
+          <motion.div
             key={hex}
             {...palette.reveal(index * COLUMN_STAGGER)}
-            className="h-16 w-20 shrink-0 rounded-lg drop-shadow-md"
-            style={{ backgroundColor: hex }}
-          />
+            className="flex flex-1 flex-col gap-1.5"
+          >
+            <div className="aspect-[5/4] w-full drop-shadow-md">
+              <Squircle
+                cornerRadius={8}
+                cornerSmoothing={1}
+                fill={hex}
+                borderWidth={0}
+                className="h-full w-full"
+              />
+            </div>
+            <span className="text-center text-xs font-medium text-body">
+              {hex}
+            </span>
+          </motion.div>
         ))}
       </div>
 
@@ -134,32 +150,53 @@ export function DirectionArtistique({
         {...typography.reveal(0)}
         src={nayaTypographySpecimen}
         alt="Spécimen typographique Massilia"
-        className="mx-auto h-auto w-full max-w-[25rem]"
+        className="h-auto w-full lg:w-72 lg:shrink-0"
       />
 
-      <div ref={icons.ref} className="flex flex-col gap-4">
+      <div ref={icons.ref} className="flex flex-col gap-4 lg:w-48 lg:shrink-0">
         <motion.img
           {...icons.reveal(HUGEICONS_LOGO_DELAY)}
           src={hugeiconsLogo}
           alt="Hugeicons"
-          className="mx-auto h-6 w-auto"
+          className="mx-auto h-auto w-[33vw] lg:h-6 lg:w-auto"
         />
 
-        <div className="flex flex-col gap-1">
-          {chunkIcons().map((row, rowIndex) => (
-            <div key={rowIndex} className="flex justify-center gap-1">
-              {row.map((icon, colIndex) => (
-                <motion.div
-                  key={colIndex}
-                  {...icons.reveal(
-                    iconItemDelay(rowIndex, colIndex),
-                    ICON_DURATION,
-                  )}
-                  className="flex aspect-square w-14 shrink-0 items-center justify-center rounded-lg bg-[#FCFCFC] text-heading"
+        <div className="grid grid-cols-6 items-start gap-1">
+          {ICON_SAMPLE.map((icon, index) => (
+            <div
+              key={index}
+              style={
+                index === LAST_ROW_START_INDEX && LAST_ROW_COL_OFFSET > 0
+                  ? { gridColumnStart: LAST_ROW_COL_OFFSET + 1 }
+                  : undefined
+              }
+              className="relative w-full"
+            >
+              {/* `aspect-square` proved unreliable on the actual background
+                  box in this nested grid — padding-bottom percentage is
+                  always relative to width, so this is a bulletproof square
+                  regardless. */}
+              <div className="pt-[100%]" />
+              <motion.div
+                {...icons.reveal(iconItemDelay(index), ICON_DURATION)}
+                className="absolute inset-0 text-heading"
+              >
+                <Squircle
+                  cornerRadius={6}
+                  cornerSmoothing={1}
+                  fill="#FCFCFC"
+                  borderWidth={0}
+                  className="h-full w-full"
                 >
-                  <HugeiconsIcon icon={icon} size={32} />
-                </motion.div>
-              ))}
+                  <div className="flex h-full w-full items-center justify-center">
+                    <HugeiconsIcon
+                      icon={icon}
+                      size={25}
+                      className="lg:h-[18.75px] lg:w-[18.75px]"
+                    />
+                  </div>
+                </Squircle>
+              </motion.div>
             </div>
           ))}
         </div>

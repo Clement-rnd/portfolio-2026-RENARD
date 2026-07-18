@@ -1,16 +1,17 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import {
-  Idea01Icon,
-  Target01Icon,
-  UserIcon,
-} from "@hugeicons/core-free-icons";
+import { Idea01Icon, Target01Icon } from "@hugeicons/core-free-icons";
+import personaAvatar1 from "../assets/images/naya/avatars/avatar-1.jpg";
+import personaAvatar2 from "../assets/images/naya/avatars/avatar-2.jpg";
+import personaAvatar3 from "../assets/images/naya/avatars/avatar-3.jpg";
 import { AnimatedHeading } from "../components/AnimatedHeading";
+import { DotBulletList } from "../components/DotBulletList";
 import { DesignSystemSegmentedControl } from "../components/DesignSystemSegmentedControl";
 import type { DesignSystemView } from "../components/DesignSystemSegmentedControl";
 import { DesignTokenFlow } from "../components/DesignTokenFlow";
 import { FigmaFileTree } from "../components/FigmaFileTree";
+import { KeyDecisionsCarousel } from "../components/KeyDecisionsCarousel";
 import { DirectionArtistique } from "../components/DirectionArtistique";
 import { PersonaBubble } from "../components/PersonaBubble";
 import { ProcessTimeline } from "../components/ProcessTimeline";
@@ -19,6 +20,7 @@ import { ProjectIntroCard } from "../components/ProjectIntroCard";
 import { RevealChars } from "../components/RevealChars";
 import { RevealWords } from "../components/RevealWords";
 import { ScreensCarousel } from "../components/ScreensCarousel";
+import { TestProtocolTimeline } from "../components/TestProtocolTimeline";
 import { SitemapTree } from "../components/SitemapTree";
 import { Squircle } from "../components/Squircle";
 import { TargetUserCarousel } from "../components/TargetUserCarousel";
@@ -56,18 +58,49 @@ const overviewValueClassName = "text-lg font-medium text-heading";
 const SPECS_LINE_STAGGER = 0.08;
 
 // Placeholder lorem ipsum, reused until real persona quotes are provided.
-const PERSONA_BUBBLES: { text: string; align: "left" | "right" }[] = [
+const PERSONA_BUBBLES: {
+  text: string;
+  align: "left" | "right";
+  avatar: string;
+}[] = [
   {
     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     align: "left",
+    avatar: personaAvatar1,
   },
   {
     text: "Sed do eiusmod tempor incididunt ut labore et dolore.",
     align: "right",
+    avatar: personaAvatar2,
   },
   {
     text: "Ut enim ad minim veniam, quis nostrud exercitation.",
     align: "left",
+    avatar: personaAvatar3,
+  },
+];
+
+// Placeholder lorem ipsum + avatars, reused until the real test-participant
+// quotes and photos are provided.
+const USER_TESTING_BUBBLES: {
+  text: string;
+  align: "left" | "right";
+  avatar: string;
+}[] = [
+  {
+    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    align: "left",
+    avatar: personaAvatar1,
+  },
+  {
+    text: "Sed do eiusmod tempor incididunt ut labore et dolore.",
+    align: "right",
+    avatar: personaAvatar2,
+  },
+  {
+    text: "Ut enim ad minim veniam, quis nostrud exercitation.",
+    align: "left",
+    avatar: personaAvatar3,
   },
 ];
 
@@ -104,6 +137,9 @@ export function ProjectPage() {
   const SITEMAP_EXIT_DELAY = EXIT_SECTION_STAGGER * 10;
   const SCREENS_EXIT_DELAY = EXIT_SECTION_STAGGER * 11;
   const DESIGN_SYSTEM_EXIT_DELAY = EXIT_SECTION_STAGGER * 12;
+  const KEY_DECISIONS_EXIT_DELAY = EXIT_SECTION_STAGGER * 13;
+  const USER_TESTING_EXIT_DELAY = EXIT_SECTION_STAGGER * 14;
+  const RETROSPECTIVE_EXIT_DELAY = EXIT_SECTION_STAGGER * 15;
   const targetUsersRef = useRef(null);
   const isTargetUsersInView = useInView(targetUsersRef, {
     once: true,
@@ -111,6 +147,11 @@ export function ProjectPage() {
   });
   const daTextRef = useRef(null);
   const isDaTextInView = useInView(daTextRef, { once: true, amount: 0.2 });
+  const designSystemTextRef = useRef(null);
+  const isDesignSystemTextInView = useInView(designSystemTextRef, {
+    once: true,
+    amount: 0.2,
+  });
   const isDesktop = useIsDesktop();
   const introRef = useRef(null);
   const isIntroInView = useInView(introRef, {
@@ -119,6 +160,26 @@ export function ProjectPage() {
   });
   const bubblesRef = useRef(null);
   const isBubblesInView = useInView(bubblesRef, { once: true, amount: 0.2 });
+  const userTestingBubblesRef = useRef(null);
+  const isUserTestingBubblesInView = useInView(userTestingBubblesRef, {
+    once: true,
+    amount: 0.2,
+  });
+  const userTestingBubbleReveal = (delay: number) => ({
+    initial: { opacity: 0, y: 40 },
+    animate: isExiting
+      ? { opacity: 0, y: -EXIT_DISTANCE }
+      : isUserTestingBubblesInView
+        ? { opacity: 1, y: 0 }
+        : undefined,
+    transition: isExiting
+      ? ({
+          duration: EXIT_DURATION,
+          delay: USER_TESTING_EXIT_DELAY,
+          ease: "easeOut",
+        } as const)
+      : ({ duration: 0.5, delay, ease: "easeOut" } as const),
+  });
   // Desktop: cards and bubbles sit side by side, so they share one trigger
   // and start together. Mobile: bubbles are stacked far below the cards, so
   // sharing the cards' trigger would "complete" their reveal off-screen
@@ -158,7 +219,7 @@ export function ProjectPage() {
 
   return (
     <main className="mx-auto max-w-[96rem] px-4 md:px-6">
-      <section className="flex min-h-screen -translate-y-8 flex-col items-center justify-center gap-4 text-center">
+      <section className="flex min-h-screen -translate-y-8 flex-col items-center justify-center gap-8 text-center">
         <RevealChars
           text={project.title}
           trigger={true}
@@ -168,7 +229,7 @@ export function ProjectPage() {
           duration={PROJECT_TITLE_CHAR_DURATION}
           className="text-[1.25rem] font-medium uppercase tracking-widest text-body"
         />
-        <h1 className="max-w-[56rem] font-casta font-medium leading-tight text-[3rem] text-heading lg:text-[clamp(3rem,6vw,7rem)]">
+        <h1 className="max-w-[56rem] font-casta font-medium leading-[0.8] text-[3rem] text-heading lg:text-[clamp(3rem,6vw,7rem)]">
           <RevealChars
             text={baselineText}
             trigger={true}
@@ -333,7 +394,7 @@ export function ProjectPage() {
                   className={`flex ${persona.align === "right" ? "justify-end" : "justify-start"}`}
                 >
                   <PersonaBubble
-                    icon={UserIcon}
+                    avatar={persona.avatar}
                     text={persona.text}
                     align={persona.align}
                   />
@@ -382,7 +443,7 @@ export function ProjectPage() {
       )}
 
       {project.hasDirectionArtistique && (
-        <section className="flex flex-col gap-6 py-12">
+        <section className="flex min-h-[66vh] flex-col gap-6 py-12">
           <AnimatedHeading
             text="Direction artistique"
             as="h2"
@@ -402,7 +463,9 @@ export function ProjectPage() {
               duration={0.4}
             />
           </p>
-          <DirectionArtistique exiting={isExiting} exitDelay={DA_EXIT_DELAY} />
+          <div className="mt-4 w-full md:mt-10">
+            <DirectionArtistique exiting={isExiting} exitDelay={DA_EXIT_DELAY} />
+          </div>
         </section>
       )}
 
@@ -427,6 +490,7 @@ export function ProjectPage() {
             screens={project.screens.map((screen) => screen.image)}
             exiting={isExiting}
             exitDelay={SCREENS_EXIT_DELAY}
+            desktopColumns={6}
           />
         </section>
       )}
@@ -443,18 +507,28 @@ export function ProjectPage() {
             className={animatedSectionTitleClassName}
           />
           <div className="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-6">
-            <motion.p
-              {...useScrollReveal({
-                y: 40,
-                duration: 0.5,
-                amount: 0.3,
-                exiting: isExiting,
-                exitDelay: DESIGN_SYSTEM_EXIT_DELAY,
-              })}
-              className="max-w-2xl text-lg font-medium text-body"
-            >
-              {project.designSystemSection.description}
-            </motion.p>
+            <div className="flex max-w-2xl flex-col gap-4">
+              <p
+                ref={designSystemTextRef}
+                className="text-lg font-medium text-body"
+              >
+                <RevealWords
+                  words={project.designSystemSection.description}
+                  trigger={isDesignSystemTextInView}
+                  exiting={isExiting}
+                  exitDelay={DESIGN_SYSTEM_EXIT_DELAY}
+                  stagger={0.02}
+                  duration={0.4}
+                />
+              </p>
+              {project.designSystemSection.items && (
+                <DotBulletList
+                  items={project.designSystemSection.items}
+                  exiting={isExiting}
+                  exitDelay={DESIGN_SYSTEM_EXIT_DELAY}
+                />
+              )}
+            </div>
             <motion.div
               {...useScrollReveal({
                 y: 40,
@@ -502,15 +576,107 @@ export function ProjectPage() {
       )}
 
       {project.keyDecisions && project.keyDecisions.length > 0 && (
-        <section className="flex flex-col gap-4 py-12">
-          <h2 className={sectionTitleClassName}>Décisions clés</h2>
-          <ul className="flex flex-col gap-2">
-            {project.keyDecisions.map((decision, index) => (
-              <li key={index} className="text-lg font-medium text-body">
-                {decision}
-              </li>
+        <section className="flex flex-col gap-6 py-12">
+          <AnimatedHeading
+            text="Décisions clés"
+            as="h2"
+            stagger={SECTION_TITLE_STAGGER}
+            duration={SECTION_TITLE_DURATION}
+            exiting={isExiting}
+            exitDelay={KEY_DECISIONS_EXIT_DELAY}
+            className={animatedSectionTitleClassName}
+          />
+          <KeyDecisionsCarousel
+            decisions={project.keyDecisions}
+            exiting={isExiting}
+            exitDelay={KEY_DECISIONS_EXIT_DELAY}
+          />
+        </section>
+      )}
+
+      {project.userTesting && project.userTesting.length > 0 && (
+        <section className="flex flex-col gap-6 py-12">
+          <AnimatedHeading
+            text="Tests utilisateurs"
+            as="h2"
+            stagger={SECTION_TITLE_STAGGER}
+            duration={SECTION_TITLE_DURATION}
+            exiting={isExiting}
+            exitDelay={USER_TESTING_EXIT_DELAY}
+            className={animatedSectionTitleClassName}
+          />
+          <div className="flex flex-col gap-8 md:flex-row md:justify-between">
+            {project.userTesting.map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                {...useScrollReveal({
+                  y: 16,
+                  duration: 0.4,
+                  delay: index * SPECS_LINE_STAGGER,
+                  amount: 0.3,
+                  exiting: isExiting,
+                  exitDelay: USER_TESTING_EXIT_DELAY,
+                })}
+                className="flex flex-col gap-2"
+              >
+                <h6 className={overviewLabelClassName}>{stat.label}</h6>
+                <p className={overviewValueClassName}>{stat.value}</p>
+              </motion.div>
             ))}
-          </ul>
+          </div>
+          <div className="mt-8 md:grid md:grid-cols-[2fr_1fr] md:items-start md:gap-10">
+            <TestProtocolTimeline
+              exiting={isExiting}
+              exitDelay={USER_TESTING_EXIT_DELAY}
+            />
+            <div
+              ref={userTestingBubblesRef}
+              className="mt-10 flex flex-col gap-10 md:mt-0"
+            >
+              {USER_TESTING_BUBBLES.map((persona, index) => (
+                <motion.div
+                  key={index}
+                  {...userTestingBubbleReveal(index * 0.25)}
+                  className={`flex ${persona.align === "right" ? "justify-end" : "justify-start"}`}
+                >
+                  <PersonaBubble
+                    avatar={persona.avatar}
+                    text={persona.text}
+                    align={persona.align}
+                  />
+                </motion.div>
+              ))}
+            </div>
+          </div>
+          {project.userTestingScreens && project.userTestingScreens.length > 0 && (
+            <div className="mt-2">
+              <ScreensCarousel
+                screens={project.userTestingScreens}
+                exiting={isExiting}
+                exitDelay={USER_TESTING_EXIT_DELAY}
+                desktopColumns={6}
+              />
+            </div>
+          )}
+        </section>
+      )}
+
+      {project.retrospective && project.retrospective.length > 0 && (
+        <section className="flex flex-col gap-6 py-12">
+          <AnimatedHeading
+            text="Ce que je ferais différemment"
+            as="h2"
+            stagger={SECTION_TITLE_STAGGER}
+            duration={SECTION_TITLE_DURATION}
+            exiting={isExiting}
+            exitDelay={RETROSPECTIVE_EXIT_DELAY}
+            className={animatedSectionTitleClassName}
+          />
+          <DotBulletList
+            items={project.retrospective}
+            exiting={isExiting}
+            exitDelay={RETROSPECTIVE_EXIT_DELAY}
+          />
         </section>
       )}
 

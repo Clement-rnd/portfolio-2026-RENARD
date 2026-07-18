@@ -11,15 +11,19 @@ import screenTreatmentDetails from "../assets/images/naya/screens/treatment-deta
 import screenVaccineDetails from "../assets/images/naya/screens/vaccine-details.png";
 import screenAllergyDetails from "../assets/images/naya/screens/allergy-details.png";
 import screenPrescriptionDetails from "../assets/images/naya/screens/prescription-details.png";
+import modifiedVaccineDetails from "../assets/images/naya/screens-modified/vaccine-details.png";
+import modifiedTreatmentDetails from "../assets/images/naya/screens-modified/treatment-details.png";
+import modifiedMedicalAddData from "../assets/images/naya/screens-modified/medical-add-data.png";
+import modifiedMedicalTypingData1 from "../assets/images/naya/screens-modified/medical-typing-data-1.png";
+import modifiedMedicalTypingData2 from "../assets/images/naya/screens-modified/medical-typing-data-2.png";
+import modifiedMedicalSize from "../assets/images/naya/screens-modified/medical-size.png";
+import userTestingAnalysisBoard from "../assets/images/naya/user-testing-analysis-board.png";
+import userTestingAnalysisBoardMobile from "../assets/images/naya/user-testing-analysis-board-mobile.png";
 import {
   Target02Icon,
-  Search01Icon,
   PaintBoardIcon,
   PuzzleIcon,
-  PenTool03Icon,
   SourceCodeIcon,
-  UserGroupIcon,
-  IterationCcwIcon,
 } from "@hugeicons/core-free-icons";
 
 export interface ProjectMeta {
@@ -103,13 +107,30 @@ export interface Project {
   designSystemSection?: {
     title: string;
     description: string;
+    /** Optional bullet list under the description, e.g. one item per
+     * design file (Librairie / Design System / Projet). */
+    items?: { label: string; text: string }[];
   };
   /** The token construction visual (primitives -> semantic -> component). */
   designTokenFlow?: DesignTokenFlow;
-  keyDecisions?: string[];
-  userTesting?: string;
+  /** The "Décisions clés" section — one card per decision. */
+  keyDecisions?: { title: string; description: string }[];
+  /** The "Tests utilisateurs" section — same label/value layout as the
+   * overview row (Type / Rôle / Compétences / Statut). */
+  userTesting?: { label: string; value: string }[];
+  /** Composed analysis board (single Figma export, full viewport width,
+   * intentionally cropped top/bottom) shown between the stats row and the
+   * updated screens, in "Tests utilisateurs" — desktop only. */
+  userTestingAnalysisBoard?: string;
+  /** Simpler single-scenario board shown instead, on mobile. */
+  userTestingAnalysisBoardMobile?: string;
+  /** Screens updated after user testing, shown at the end of "Tests
+   * utilisateurs" — same swipe carousel as the "Écrans" section. */
+  userTestingScreens?: string[];
   livePrototypeUrl?: string;
-  retrospective?: string;
+  /** The "Ce que je ferais différemment" section — bullet list, same
+   * DotSeparator marker as the Design system items. */
+  retrospective?: { label?: string; text: string }[];
   /** Shown in the project page's overview row, e.g. "Application mobile". */
   overviewType?: string;
   /** Shown in the project page's overview row, e.g. "Terminé"/"En cours". */
@@ -170,7 +191,7 @@ export const projects: Project[] = [
   {
     slug: "naya",
     title: "Naya",
-    tagline: "Prendre soin, sans stress",
+    tagline: "Prendre soin,\nsans stress",
     projectKind: "personnel",
     duration: "6 mois",
     tags: [
@@ -250,60 +271,24 @@ export const projects: Project[] = [
           "Quand leur animal ne va pas bien, la plupart des propriétaires se tournent d'abord vers les réseaux sociaux. Les conseils qu'ils reçoivent proviennent de personnes sans formation médicale. Pour un sujet aussi sérieux, ce n'est clairement pas une source fiable.",
       },
     },
-    processSteps: [
-      {
-        icon: Target02Icon,
-        title: "Cadrage",
-        description:
-          "Définir le périmètre du concept, identifier les cibles et poser les bases du projet.",
-      },
-      {
-        icon: Search01Icon,
-        title: "Recherche",
-        description:
-          "Procéder à un benchmark concurrentiel, étudier le public cible et les cas d'usage. Définir le scope MVP.",
-      },
-      {
-        icon: PaintBoardIcon,
-        title: "Direction artistique",
-        description:
-          "Construction de l'identité de marque : nom, logo, univers visuel.",
-      },
-      {
-        icon: PuzzleIcon,
-        title: "Design system",
-        description:
-          "Mise en place des fondations visuelles : couleurs, typographies, composants réutilisables.",
-      },
-      {
-        icon: PenTool03Icon,
-        title: "Design des écrans",
-        description:
-          "Mise en place de l'arborescence et des userflows, conception des écrans.",
-      },
-      {
-        icon: SourceCodeIcon,
-        title: "Prototype",
-        description:
-          "Vibe coding du prototype hi-fi totalement fonctionnel sur mobile.",
-      },
-      {
-        icon: UserGroupIcon,
-        title: "Tests",
-        description:
-          "Définition des utilisateurs à interviewer, conception de la trame de test et des scénarios à vérifier. Organiser les tests, traiter et synthétiser les résultats.",
-      },
-      {
-        icon: IterationCcwIcon,
-        title: "Itérations",
-        description: "Ajuster l'application en fonction des retours.",
-      },
-    ],
     designSystemSection: {
       title: "Design system",
-      // Placeholder — à remplacer par le vrai texte de présentation.
       description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+        "Le design system n'est pas figé au jour de sa création : il est pensé pour grandir avec le projet. C'est pourquoi le système repose sur trois fichiers distincts qui communiquent entre eux.",
+      items: [
+        {
+          label: "La Librairie",
+          text: "rassemble tout ce qui est réutilisable brut : icônes, logos, avatars, drapeaux.",
+        },
+        {
+          label: "Le Design System",
+          text: "contient les tokens organisés en trois niveaux, les composants construits à partir de ces tokens, et toute la documentation qui explique comment le design system fonctionne.",
+        },
+        {
+          label: "Le fichier Projet",
+          text: "vient ensuite piocher dans les deux premiers pour construire les recherches, l'arborescence, les userflows et les écrans finaux.",
+        },
+      ],
     },
     designTokenFlow: {
       primitives: [
@@ -413,6 +398,52 @@ export const projects: Project[] = [
           { label: "À propos" },
           { label: "Déconnexion" },
         ],
+      },
+    ],
+    keyDecisions: [
+      {
+        title: "Les données médicales réservées au vétérinaire",
+        description:
+          "Plutôt que de tout mettre dans un seul scroll, j'ai créé deux onglets bien distincts. Le propriétaire remplit les infos générales, le vétérinaire s'occupe du médical. Chacun reste dans son rôle, et l'écran ne se retrouve pas noyé sous des infos qui n'ont rien à voir entre elles.",
+      },
+      {
+        title: "Un pattern de fiche universel",
+        description:
+          "Au lieu de designer un écran différent pour chaque type d'info médicale, j'ai construit un seul template une icône, un titre, un badge de criticité, quelques blocs de détails. Ce même schéma sert aussi bien pour une allergie que pour un vaccin ou un traitement. Résultat : tout se ressemble, tout s'apprend une seule fois, et si demain il faut ajouter un nouveau type de donnée, pas besoin de tout repenser.",
+      },
+      {
+        title: "Classement des allergies",
+        description:
+          "Deux façons logiques de trier les allergies d'un animal : par catégorie (alimentaire, environnementale, médicale) ou par gravité (élevé, modéré, faible). J'ai choisi la catégorie comme tri par défaut, avec un code couleur qui indique la gravité de chaque allergie sans avoir à changer de tri.",
+      },
+    ],
+    userTesting: [
+      {
+        label: "Participants",
+        value: "5 participants (26 à 63 ans, profils variés)",
+      },
+      { label: "Format", value: "Entretiens semi-dirigés de 45 min" },
+      { label: "Scénarios", value: "10 scénarios testés" },
+      { label: "Prototype", value: "Prototype vibecodé" },
+    ],
+    userTestingAnalysisBoard,
+    userTestingAnalysisBoardMobile,
+    userTestingScreens: [
+      modifiedMedicalSize,
+      modifiedMedicalAddData,
+      modifiedMedicalTypingData1,
+      modifiedMedicalTypingData2,
+      modifiedTreatmentDetails,
+      modifiedVaccineDetails,
+    ],
+    retrospective: [
+      {
+        label: "Le manque de regard extérieur.",
+        text: "Ça a des avantages, mais aussi un vrai angle mort : personne pour challenger mes choix avant d'arriver aux tests. Un autre designer ou un dev aurait sûrement repéré certaines limites plus tôt.",
+      },
+      {
+        label: "Un panel de test un peu court.",
+        text: "5 participants, c'est le minimum pour commencer à voir les vrais problèmes en UX research, mais ça reste juste. Deux ou trois profils en plus auraient donné plus de poids aux retours.",
       },
     ],
   },

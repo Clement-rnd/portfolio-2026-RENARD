@@ -161,7 +161,8 @@ function CategoryBranch({
                 </span>
               </div>
               {item.children && item.children.length > 0 && (
-                <div className="ml-2 flex flex-col gap-1 border-l border-neutral-200 pl-4">
+                <div className="relative ml-2 flex flex-col gap-1 pl-4">
+                  <div className="absolute top-0 bottom-0 left-0 w-px bg-neutral-200" />
                   {item.children.map((child, childOffset) => (
                     <motion.span
                       key={child.label}
@@ -228,10 +229,10 @@ export function FigmaFileTree() {
   }, []);
 
   return (
-    <div ref={outerRef} className="max-w-2xl overflow-hidden">
+    <div ref={outerRef} className="overflow-hidden">
       <div
         ref={innerRef}
-        className="flex w-max justify-between gap-10"
+        className="flex w-max justify-between gap-6 md:w-full"
         style={{ transform: `scale(${scale})`, transformOrigin: "top left" }}
       >
         {CATEGORIES.map((category, index) => (

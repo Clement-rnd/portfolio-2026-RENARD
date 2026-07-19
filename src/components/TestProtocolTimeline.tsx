@@ -66,7 +66,6 @@ function StepCard({ step }: { step: ProtocolStep }) {
       cornerSmoothing={1}
       borderColor="#F0EFEF"
       fill="#FCFCFC"
-      className="w-full"
     >
       <div className="flex flex-col gap-4 p-6">
         <h3 className="font-casta text-xl font-medium text-heading">
@@ -136,11 +135,14 @@ function TimelineRow({
   };
 
   return (
-    <div ref={ref} className="grid grid-cols-[1fr_auto_1fr] items-center gap-0">
+    <div
+      ref={ref}
+      className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-0"
+    >
       <div className="flex items-center justify-end">
         {isLeft && (
           <>
-            <motion.div {...reveal} className="w-fit max-w-md">
+            <motion.div {...reveal} className="w-80">
               <StepCard step={step} />
             </motion.div>
             <motion.div
@@ -163,7 +165,7 @@ function TimelineRow({
               {...reveal}
               className="h-1 w-6 shrink-0 rounded-full bg-neutral-200"
             />
-            <motion.div {...reveal} className="w-fit max-w-md">
+            <motion.div {...reveal} className="w-80">
               <StepCard step={step} />
             </motion.div>
           </>

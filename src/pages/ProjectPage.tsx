@@ -5,13 +5,21 @@ import { Idea01Icon, Target01Icon } from "@hugeicons/core-free-icons";
 import personaAvatar1 from "../assets/images/naya/avatars/avatar-1.jpg";
 import personaAvatar2 from "../assets/images/naya/avatars/avatar-2.jpg";
 import personaAvatar3 from "../assets/images/naya/avatars/avatar-3.jpg";
+import userTestingAvatar1 from "../assets/images/naya/avatars/avatar-4.jpg";
+import userTestingAvatar2 from "../assets/images/naya/avatars/avatar-5.jpg";
+import userTestingAvatar3 from "../assets/images/naya/avatars/avatar-6.jpg";
+import userTestingAvatar4 from "../assets/images/naya/avatars/avatar-7.jpg";
+import userTestingAvatar5 from "../assets/images/naya/avatars/avatar-8.jpg";
 import { AnimatedHeading } from "../components/AnimatedHeading";
 import { DotBulletList } from "../components/DotBulletList";
 import { DesignSystemSegmentedControl } from "../components/DesignSystemSegmentedControl";
 import type { DesignSystemView } from "../components/DesignSystemSegmentedControl";
 import { DesignTokenFlow } from "../components/DesignTokenFlow";
 import { FigmaFileTree } from "../components/FigmaFileTree";
+import { FigmaPagesPanel } from "../components/FigmaPagesPanel";
 import { KeyDecisionsCarousel } from "../components/KeyDecisionsCarousel";
+import { LibraryShowcase } from "../components/LibraryShowcase";
+import { UserFlowDiagram } from "../components/UserFlowDiagram";
 import { DirectionArtistique } from "../components/DirectionArtistique";
 import { PersonaBubble } from "../components/PersonaBubble";
 import { ProcessTimeline } from "../components/ProcessTimeline";
@@ -57,50 +65,61 @@ const overviewLabelClassName = "text-sm font-medium text-body";
 const overviewValueClassName = "text-lg font-medium text-heading";
 const SPECS_LINE_STAGGER = 0.08;
 
-// Placeholder lorem ipsum, reused until real persona quotes are provided.
+// Real forum-style quotes illustrating the "Contexte" problem. Avatars are
+// still placeholders until the real photos are provided.
 const PERSONA_BUBBLES: {
   text: string;
   align: "left" | "right";
   avatar: string;
 }[] = [
   {
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    text: "Mon chat vomit depuis ce matin, il a l'air normal sinon. Je m'inquiète pour rien ou pas ?",
     align: "left",
     avatar: personaAvatar1,
   },
   {
-    text: "Sed do eiusmod tempor incididunt ut labore et dolore.",
+    text: "Ma chienne boite un peu depuis hier, elle a couru dans le jardin toute la journée avant. Ça peut passer tout seul vous pensez ?",
     align: "right",
     avatar: personaAvatar2,
   },
   {
-    text: "Ut enim ad minim veniam, quis nostrud exercitation.",
+    text: "Mon chat a arrêté de manger depuis 2 jours, il boit toujours. Quelqu'un a déjà eu ce cas ?",
     align: "left",
     avatar: personaAvatar3,
   },
 ];
 
-// Placeholder lorem ipsum + avatars, reused until the real test-participant
-// quotes and photos are provided.
+// Real test-participant quotes. Avatars are still placeholders (5 distinct
+// photos, one per participant) until the real participant photos are provided.
 const USER_TESTING_BUBBLES: {
   text: string;
   align: "left" | "right";
   avatar: string;
 }[] = [
   {
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    text: "Je dirais que c'est super fluide !",
     align: "left",
-    avatar: personaAvatar1,
+    avatar: userTestingAvatar1,
   },
   {
-    text: "Sed do eiusmod tempor incididunt ut labore et dolore.",
+    text: "Je préfère, j'ai pas envie de me tromper sur le médical.",
     align: "right",
-    avatar: personaAvatar2,
+    avatar: userTestingAvatar2,
   },
   {
-    text: "Ut enim ad minim veniam, quis nostrud exercitation.",
+    text: "Peut-être avoir un récapitulatif pour les consultations et intervention !",
     align: "left",
-    avatar: personaAvatar3,
+    avatar: userTestingAvatar3,
+  },
+  {
+    text: "Ici mon vaccin est à faire, j'aurai bien aimé prendre RDV, sans avoir à retourner sur la home.",
+    align: "right",
+    avatar: userTestingAvatar4,
+  },
+  {
+    text: "Tout est clair, tu as déjà toutes les infos là !",
+    align: "left",
+    avatar: userTestingAvatar5,
   },
 ];
 
@@ -278,7 +297,7 @@ export function ProjectPage() {
         </motion.div>
       </section>
 
-      <section className="flex flex-col gap-6 py-12">
+      <section className="flex flex-col gap-6 pt-12 pb-0">
         <motion.hr
           {...specsRevealProps(0)}
           className="hidden border-neutral-200 md:block"
@@ -337,7 +356,7 @@ export function ProjectPage() {
       </section>
 
       {project.processSteps && project.processSteps.length > 0 && (
-        <section className="flex flex-col gap-6 py-12">
+        <section className="flex flex-col gap-6 py-24">
           <AnimatedHeading
             text="Process"
             as="h2"
@@ -356,7 +375,7 @@ export function ProjectPage() {
       )}
 
       {project.intro && (
-        <section className="flex flex-col gap-6 py-12">
+        <section className="flex flex-col gap-6 py-24">
           <AnimatedHeading
             text="Introduction"
             as="h2"
@@ -386,27 +405,29 @@ export function ProjectPage() {
                 />
               </motion.div>
             </div>
-            <div ref={bubblesRef} className="flex flex-col gap-10">
-              {PERSONA_BUBBLES.map((persona, index) => (
-                <motion.div
-                  key={index}
-                  {...bubbleReveal(index * 0.25, PERSONAS_EXIT_DELAY)}
-                  className={`flex ${persona.align === "right" ? "justify-end" : "justify-start"}`}
-                >
-                  <PersonaBubble
-                    avatar={persona.avatar}
-                    text={persona.text}
-                    align={persona.align}
-                  />
-                </motion.div>
-              ))}
+            <div className="flex md:justify-center">
+              <div ref={bubblesRef} className="flex flex-col gap-10 md:w-[42rem]">
+                {PERSONA_BUBBLES.map((persona, index) => (
+                  <motion.div
+                    key={index}
+                    {...bubbleReveal(index * 0.25, PERSONAS_EXIT_DELAY)}
+                    className={`flex ${persona.align === "right" ? "justify-end" : "justify-start"}`}
+                  >
+                    <PersonaBubble
+                      avatar={persona.avatar}
+                      text={persona.text}
+                      align={persona.align}
+                    />
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
       )}
 
       {project.targetUserPersonas && project.targetUserPersonas.length > 0 && (
-        <section className="flex flex-col gap-6 py-12">
+        <section className="flex flex-col gap-6 py-24">
           <AnimatedHeading
             text="Utilisateurs cibles"
             as="h2"
@@ -443,7 +464,7 @@ export function ProjectPage() {
       )}
 
       {project.hasDirectionArtistique && (
-        <section className="flex min-h-[66vh] flex-col gap-6 py-12">
+        <section className="flex min-h-[50vh] flex-col gap-6 py-32">
           <AnimatedHeading
             text="Direction artistique"
             as="h2"
@@ -469,34 +490,39 @@ export function ProjectPage() {
         </section>
       )}
 
-      {project.sitemap && project.sitemap.length > 0 && (
-        <section className="flex flex-col gap-6 py-12">
-          <AnimatedHeading
-            text="Conception"
-            as="h2"
-            stagger={SECTION_TITLE_STAGGER}
-            duration={SECTION_TITLE_DURATION}
-            exiting={isExiting}
-            exitDelay={SITEMAP_EXIT_DELAY}
-            className={animatedSectionTitleClassName}
-          />
-          <SitemapTree categories={project.sitemap} />
-        </section>
-      )}
+      {((project.sitemap && project.sitemap.length > 0) ||
+        (project.screens && project.screens.length > 0)) && (
+        <section className="flex flex-col gap-6 py-24">
+          {project.sitemap && project.sitemap.length > 0 && (
+            <>
+              <AnimatedHeading
+                text="Conception"
+                as="h2"
+                stagger={SECTION_TITLE_STAGGER}
+                duration={SECTION_TITLE_DURATION}
+                exiting={isExiting}
+                exitDelay={SITEMAP_EXIT_DELAY}
+                className={animatedSectionTitleClassName}
+              />
+              <SitemapTree categories={project.sitemap} />
+            </>
+          )}
 
-      {project.screens && project.screens.length > 0 && (
-        <section className="flex flex-col gap-6 py-12">
-          <ScreensCarousel
-            screens={project.screens.map((screen) => screen.image)}
-            exiting={isExiting}
-            exitDelay={SCREENS_EXIT_DELAY}
-            desktopColumns={6}
-          />
+          {project.screens && project.screens.length > 0 && (
+            <div className="mt-16">
+              <ScreensCarousel
+                screens={project.screens.map((screen) => screen.image)}
+                exiting={isExiting}
+                exitDelay={SCREENS_EXIT_DELAY}
+                desktopColumns={6}
+              />
+            </div>
+          )}
         </section>
       )}
 
       {project.designSystemSection && (
-        <section className="flex flex-col gap-6 py-12">
+        <section className="flex flex-col gap-6 py-24">
           <AnimatedHeading
             text={project.designSystemSection.title}
             as="h2"
@@ -551,14 +577,14 @@ export function ProjectPage() {
               exiting: isExiting,
               exitDelay: DESIGN_SYSTEM_EXIT_DELAY,
             })}
-            className="mt-12 md:flex md:justify-center"
+            className="mt-16 md:flex md:justify-center"
           >
             <DesignSystemSegmentedControl
               value={designSystemView}
               onChange={setDesignSystemView}
             />
           </motion.div>
-          {project.designTokenFlow && (
+          {designSystemView === "design-system" && project.designTokenFlow && (
             <motion.div
               {...useScrollReveal({
                 y: 40,
@@ -572,11 +598,20 @@ export function ProjectPage() {
               <DesignTokenFlow flow={project.designTokenFlow} />
             </motion.div>
           )}
+          {designSystemView === "library" && (
+            <LibraryShowcase exiting={isExiting} exitDelay={DESIGN_SYSTEM_EXIT_DELAY} />
+          )}
+          {designSystemView === "project" && (
+            <div className="flex flex-col gap-6 md:flex-row md:items-start">
+              <FigmaPagesPanel exiting={isExiting} exitDelay={DESIGN_SYSTEM_EXIT_DELAY} />
+              <UserFlowDiagram exiting={isExiting} exitDelay={DESIGN_SYSTEM_EXIT_DELAY} />
+            </div>
+          )}
         </section>
       )}
 
       {project.keyDecisions && project.keyDecisions.length > 0 && (
-        <section className="flex flex-col gap-6 py-12">
+        <section className="flex flex-col gap-6 py-24">
           <AnimatedHeading
             text="Décisions clés"
             as="h2"
@@ -595,7 +630,7 @@ export function ProjectPage() {
       )}
 
       {project.userTesting && project.userTesting.length > 0 && (
-        <section className="flex flex-col gap-6 py-12">
+        <section className="flex flex-col gap-6 py-24">
           <AnimatedHeading
             text="Tests utilisateurs"
             as="h2"
@@ -624,14 +659,14 @@ export function ProjectPage() {
               </motion.div>
             ))}
           </div>
-          <div className="mt-8 md:grid md:grid-cols-[2fr_1fr] md:items-start md:gap-10">
+          <div className="mt-8 md:grid md:grid-cols-2 md:items-center md:gap-32">
             <TestProtocolTimeline
               exiting={isExiting}
               exitDelay={USER_TESTING_EXIT_DELAY}
             />
             <div
               ref={userTestingBubblesRef}
-              className="mt-10 flex flex-col gap-10 md:mt-0"
+              className="mt-10 flex flex-col gap-10 md:mt-0 md:w-[42rem]"
             >
               {USER_TESTING_BUBBLES.map((persona, index) => (
                 <motion.div
@@ -649,7 +684,7 @@ export function ProjectPage() {
             </div>
           </div>
           {project.userTestingScreens && project.userTestingScreens.length > 0 && (
-            <div className="mt-2">
+            <div className="mt-16">
               <ScreensCarousel
                 screens={project.userTestingScreens}
                 exiting={isExiting}
@@ -662,7 +697,7 @@ export function ProjectPage() {
       )}
 
       {project.retrospective && project.retrospective.length > 0 && (
-        <section className="flex flex-col gap-6 py-12">
+        <section className="flex flex-col gap-6 py-24">
           <AnimatedHeading
             text="Ce que je ferais différemment"
             as="h2"
@@ -680,7 +715,7 @@ export function ProjectPage() {
         </section>
       )}
 
-      <section className="flex flex-col gap-6 py-12">
+      <section className="flex flex-col gap-6 py-24">
         <h2 className={sectionTitleClassName}>Voir d'autres projets</h2>
         <div className="grid grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-3">
           {otherProjects.map((otherProject) => (

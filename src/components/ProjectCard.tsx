@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import type { Project } from "../data/projects";
 import { DotSeparator } from "./DotSeparator";
+import { NayaCardCover } from "./NayaCardCover";
 import { Squircle } from "./Squircle";
 import { usePageTransition } from "../lib/PageTransitionContext";
 
@@ -22,6 +23,7 @@ function isVideo(src: string) {
 export function ProjectCard({ project }: ProjectCardProps) {
   const { navigateWithExit } = usePageTransition();
   const href = `/projects/${project.slug}`;
+  const isCompleted = project.status === "Terminé";
 
   return (
     <Link
@@ -39,7 +41,10 @@ export function ProjectCard({ project }: ProjectCardProps) {
         borderWidth={0}
         className="h-80 w-full"
       >
-        {project.coverImage &&
+        {project.slug === "naya" ? (
+          <NayaCardCover />
+        ) : (
+          project.coverImage &&
           (isVideo(project.coverImage) ? (
             <video
               src={project.coverImage}
@@ -55,7 +60,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
               alt=""
               className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             />
-          ))}
+          ))
+        )}
+        {isCompleted && (
+          <div className="absolute inset-0 hidden bg-black opacity-0 transition-opacity duration-300 ease-out md:block md:group-hover:opacity-[0.08]" />
+        )}
         <div className="absolute inset-0 flex items-center justify-center">
           <Squircle
             cornerRadius={8}
@@ -65,7 +74,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             className="scale-90 opacity-0 transition-all duration-300 ease-out group-hover:scale-100 group-hover:opacity-100"
           >
             <span className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-white">
-              Coming soon...
+              {isCompleted ? "Voir le projet" : "Coming soon..."}
             </span>
           </Squircle>
         </div>

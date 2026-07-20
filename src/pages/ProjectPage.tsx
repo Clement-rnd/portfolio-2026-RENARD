@@ -14,6 +14,7 @@ import { AnimatedHeading } from "../components/AnimatedHeading";
 import { DotBulletList } from "../components/DotBulletList";
 import { FigmaFileTree } from "../components/FigmaFileTree";
 import { KeyDecisionsCarousel } from "../components/KeyDecisionsCarousel";
+import { NayaCoverHero } from "../components/NayaCoverHero";
 import { DirectionArtistique } from "../components/DirectionArtistique";
 import { PersonaBubble } from "../components/PersonaBubble";
 import { ProcessTimeline } from "../components/ProcessTimeline";
@@ -151,6 +152,7 @@ export function ProjectPage() {
   const KEY_DECISIONS_EXIT_DELAY = EXIT_SECTION_STAGGER * 13;
   const USER_TESTING_EXIT_DELAY = EXIT_SECTION_STAGGER * 14;
   const RETROSPECTIVE_EXIT_DELAY = EXIT_SECTION_STAGGER * 15;
+  const OTHER_PROJECTS_EXIT_DELAY = EXIT_SECTION_STAGGER * 16;
   const targetUsersRef = useRef(null);
   const isTargetUsersInView = useInView(targetUsersRef, {
     once: true,
@@ -268,7 +270,10 @@ export function ProjectPage() {
             borderWidth={0}
             className="h-[66vh] w-full"
           >
-            {project.coverImage &&
+            {project.slug === "naya" ? (
+              <NayaCoverHero exiting={isExiting} exitDelay={COVER_EXIT_DELAY} />
+            ) : (
+              project.coverImage &&
               (isVideo(project.coverImage) ? (
                 <video
                   src={project.coverImage}
@@ -284,7 +289,8 @@ export function ProjectPage() {
                   alt=""
                   className="h-full w-full object-cover"
                 />
-              ))}
+              ))
+            )}
           </Squircle>
         </motion.div>
       </section>
@@ -671,8 +677,20 @@ export function ProjectPage() {
       <section className="flex flex-col gap-6 py-24">
         <h2 className={sectionTitleClassName}>Voir d'autres projets</h2>
         <div className="grid grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-3">
-          {otherProjects.map((otherProject) => (
-            <ProjectCard key={otherProject.slug} project={otherProject} />
+          {otherProjects.map((otherProject, index) => (
+            <motion.div
+              key={otherProject.slug}
+              {...useScrollReveal({
+                y: 40,
+                duration: 0.5,
+                delay: index * 0.1,
+                amount: 0.2,
+                exiting: isExiting,
+                exitDelay: OTHER_PROJECTS_EXIT_DELAY,
+              })}
+            >
+              <ProjectCard project={otherProject} />
+            </motion.div>
           ))}
         </div>
       </section>

@@ -1,4 +1,5 @@
 import type { ProcessStep } from "./process";
+import nayaCover from "../assets/images/naya/cover.jpg";
 import screenSplash from "../assets/images/naya/screens/splash.png";
 import screenHome from "../assets/images/naya/screens/home.png";
 import screenHealth from "../assets/images/naya/screens/health.png";
@@ -191,6 +192,7 @@ export const projects: Project[] = [
   {
     slug: "naya",
     title: "Naya",
+    coverImage: nayaCover,
     tagline: "Prendre soin,\nsans stress",
     projectKind: "personnel",
     duration: "6 mois",

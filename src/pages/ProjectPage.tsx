@@ -13,10 +13,7 @@ import userTestingAvatar5 from "../assets/images/naya/avatars/avatar-8.jpg";
 import { AnimatedHeading } from "../components/AnimatedHeading";
 import { DotBulletList } from "../components/DotBulletList";
 import { FigmaFileTree } from "../components/FigmaFileTree";
-import { FigmaPagesPanel } from "../components/FigmaPagesPanel";
 import { KeyDecisionsCarousel } from "../components/KeyDecisionsCarousel";
-import { LibraryShowcase } from "../components/LibraryShowcase";
-import { UserFlowDiagram } from "../components/UserFlowDiagram";
 import { DirectionArtistique } from "../components/DirectionArtistique";
 import { PersonaBubble } from "../components/PersonaBubble";
 import { ProcessTimeline } from "../components/ProcessTimeline";
@@ -562,13 +559,6 @@ export function ProjectPage() {
             >
               <FigmaFileTree />
             </motion.div>
-          </div>
-          <div className="mt-16">
-            <LibraryShowcase exiting={isExiting} exitDelay={DESIGN_SYSTEM_EXIT_DELAY} />
-          </div>
-          <div className="mt-16 flex flex-col gap-6 md:flex-row md:items-start">
-            <FigmaPagesPanel exiting={isExiting} exitDelay={DESIGN_SYSTEM_EXIT_DELAY} />
-            <UserFlowDiagram exiting={isExiting} exitDelay={DESIGN_SYSTEM_EXIT_DELAY} />
           </div>
         </section>
       )}

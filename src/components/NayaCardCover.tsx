@@ -51,7 +51,7 @@ export function NayaCardCover() {
           }}
         >
           <Squircle
-            cornerRadius={22}
+            cornerRadius={14}
             cornerSmoothing={1}
             borderWidth={0}
             className="h-full w-full"

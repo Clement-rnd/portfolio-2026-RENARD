@@ -76,7 +76,7 @@ export function NayaCoverHero({
           }}
         >
           <Squircle
-            cornerRadius={28}
+            cornerRadius={19}
             cornerSmoothing={1}
             borderWidth={0}
             className="h-full w-full"

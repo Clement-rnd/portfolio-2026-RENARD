@@ -1,5 +1,5 @@
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { useParams } from "react-router-dom";
 import { Idea01Icon, Target01Icon } from "@hugeicons/core-free-icons";
 import personaAvatar1 from "../assets/images/naya/avatars/avatar-1.jpg";
@@ -12,9 +12,6 @@ import userTestingAvatar4 from "../assets/images/naya/avatars/avatar-7.jpg";
 import userTestingAvatar5 from "../assets/images/naya/avatars/avatar-8.jpg";
 import { AnimatedHeading } from "../components/AnimatedHeading";
 import { DotBulletList } from "../components/DotBulletList";
-import { DesignSystemSegmentedControl } from "../components/DesignSystemSegmentedControl";
-import type { DesignSystemView } from "../components/DesignSystemSegmentedControl";
-import { DesignTokenFlow } from "../components/DesignTokenFlow";
 import { FigmaFileTree } from "../components/FigmaFileTree";
 import { FigmaPagesPanel } from "../components/FigmaPagesPanel";
 import { KeyDecisionsCarousel } from "../components/KeyDecisionsCarousel";
@@ -127,8 +124,6 @@ export function ProjectPage() {
   const { isExiting } = usePageTransition();
   const { slug } = useParams<{ slug: string }>();
   const project = projects.find((p) => p.slug === slug);
-  const [designSystemView, setDesignSystemView] =
-    useState<DesignSystemView>("design-system");
 
   if (!project) {
     return (
@@ -568,45 +563,13 @@ export function ProjectPage() {
               <FigmaFileTree />
             </motion.div>
           </div>
-          <motion.div
-            {...useScrollReveal({
-              y: 40,
-              duration: 0.5,
-              delay: 0.1,
-              amount: 0.3,
-              exiting: isExiting,
-              exitDelay: DESIGN_SYSTEM_EXIT_DELAY,
-            })}
-            className="mt-16 md:flex md:justify-center"
-          >
-            <DesignSystemSegmentedControl
-              value={designSystemView}
-              onChange={setDesignSystemView}
-            />
-          </motion.div>
-          {designSystemView === "design-system" && project.designTokenFlow && (
-            <motion.div
-              {...useScrollReveal({
-                y: 40,
-                duration: 0.5,
-                delay: 0.1,
-                amount: 0.2,
-                exiting: isExiting,
-                exitDelay: DESIGN_SYSTEM_EXIT_DELAY,
-              })}
-            >
-              <DesignTokenFlow flow={project.designTokenFlow} />
-            </motion.div>
-          )}
-          {designSystemView === "library" && (
+          <div className="mt-16">
             <LibraryShowcase exiting={isExiting} exitDelay={DESIGN_SYSTEM_EXIT_DELAY} />
-          )}
-          {designSystemView === "project" && (
-            <div className="flex flex-col gap-6 md:flex-row md:items-start">
-              <FigmaPagesPanel exiting={isExiting} exitDelay={DESIGN_SYSTEM_EXIT_DELAY} />
-              <UserFlowDiagram exiting={isExiting} exitDelay={DESIGN_SYSTEM_EXIT_DELAY} />
-            </div>
-          )}
+          </div>
+          <div className="mt-16 flex flex-col gap-6 md:flex-row md:items-start">
+            <FigmaPagesPanel exiting={isExiting} exitDelay={DESIGN_SYSTEM_EXIT_DELAY} />
+            <UserFlowDiagram exiting={isExiting} exitDelay={DESIGN_SYSTEM_EXIT_DELAY} />
+          </div>
         </section>
       )}
 

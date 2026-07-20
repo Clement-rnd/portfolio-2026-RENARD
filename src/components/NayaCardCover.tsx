@@ -14,24 +14,24 @@ const PHONES = [
   {
     src: phoneSplash,
     leftPct: 31,
-    topPct: 81.19,
     className: "[--fan:0px] [--tilt:-4deg] group-hover:[--fan:-22px] group-hover:[--tilt:-9deg]",
   },
   {
     src: phoneHome,
     leftPct: 50.34,
-    topPct: 78.92,
     className: "[--fan:0px] [--tilt:0deg] group-hover:[--fan:0px] group-hover:[--tilt:0deg]",
   },
   {
     src: phoneDetails,
     leftPct: 69.68,
-    topPct: 81.19,
     className: "[--fan:0px] [--tilt:4deg] group-hover:[--fan:22px] group-hover:[--tilt:9deg]",
   },
 ];
 
-const WIDTH_PCT = 26.41;
+const WIDTH_PCT = 18;
+// Top edge of every phone sits at this fixed distance from the top of the
+// card cover, regardless of screen size.
+const TOP_PCT = 15;
 
 export function NayaCardCover() {
   return (
@@ -42,11 +42,11 @@ export function NayaCardCover() {
           className={`absolute transition-transform duration-500 ease-out ${phone.className}`}
           style={{
             left: `${phone.leftPct}%`,
-            top: `${phone.topPct}%`,
+            top: `${TOP_PCT}%`,
             width: `${WIDTH_PCT}%`,
             aspectRatio: "393 / 852",
             transform:
-              "translate(calc(-50% + var(--fan)), -50%) rotate(var(--tilt))",
+              "translate(calc(-50% + var(--fan)), 0%) rotate(var(--tilt))",
             filter: "drop-shadow(0px 12px 30px rgba(0,0,0,0.12))",
           }}
         >

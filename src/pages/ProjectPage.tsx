@@ -674,7 +674,7 @@ export function ProjectPage() {
         </section>
       )}
 
-      <section className="flex flex-col gap-6 py-24">
+      <section id="projets" className="flex flex-col gap-6 py-24">
         <h2 className={sectionTitleClassName}>Voir d'autres projets</h2>
         <div className="grid grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-3">
           {otherProjects.map((otherProject, index) => (

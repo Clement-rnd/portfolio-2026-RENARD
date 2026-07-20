@@ -20,10 +20,13 @@ export interface NayaCoverHeroProps {
 // our own Squircle + CSS, so nothing is pre-baked against a mismatched
 // background the way a raster Figma export would be.
 const PHONES = [
-  { src: phoneSplash, leftPct: 31, topPct: 81.19, widthPct: 26.41, rotate: -4 },
-  { src: phoneHome, leftPct: 50.34, topPct: 78.92, widthPct: 26.41, rotate: 0 },
-  { src: phoneDetails, leftPct: 69.68, topPct: 81.19, widthPct: 26.41, rotate: 4 },
+  { src: phoneSplash, leftPct: 31, widthPct: 18, rotate: -4 },
+  { src: phoneHome, leftPct: 50.34, widthPct: 18, rotate: 0 },
+  { src: phoneDetails, leftPct: 69.68, widthPct: 18, rotate: 4 },
 ];
+// Top edge of every phone sits at this fixed distance from the top of the
+// cover, regardless of screen size.
+const TOP_PCT = 15;
 
 const PHONE_STAGGER = 0.15;
 const PHONE_SHADOW = "0px 12px 30px rgba(0,0,0,0.12)";
@@ -64,10 +67,10 @@ export function NayaCoverHero({
           className="absolute"
           style={{
             left: `${phone.leftPct}%`,
-            top: `${phone.topPct}%`,
+            top: `${TOP_PCT}%`,
             width: `${phone.widthPct}%`,
             aspectRatio: "393 / 852",
-            translate: "-50% -50%",
+            translate: "-50% 0%",
             rotate: `${phone.rotate}deg`,
             filter: `drop-shadow(${PHONE_SHADOW})`,
           }}

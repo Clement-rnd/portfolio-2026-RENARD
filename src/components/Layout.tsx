@@ -3,7 +3,11 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Nav } from "./Nav";
 import { Footer } from "./Footer";
 import { PageTransitionContext } from "../lib/PageTransitionContext";
-import { TOTAL_EXIT_DURATION, WAIT_AFTER_EXIT } from "../lib/exitTransition";
+import {
+  PROJECT_TOTAL_EXIT_DURATION,
+  TOTAL_EXIT_DURATION,
+  WAIT_AFTER_EXIT,
+} from "../lib/exitTransition";
 
 export function Layout() {
   const [isExiting, setIsExiting] = useState(false);
@@ -13,6 +17,13 @@ export function Layout() {
   const navigateWithExit = useCallback(
     (href: string) => {
       setIsExiting(true);
+      // Project detail pages have a much longer per-section exit-delay
+      // ladder than the home page (see PROJECT_TOTAL_EXIT_DURATION) — using
+      // the home page's shorter duration here would navigate away before a
+      // project page's later sections even start fading out.
+      const exitDuration = location.pathname.startsWith("/projects/")
+        ? PROJECT_TOTAL_EXIT_DURATION
+        : TOTAL_EXIT_DURATION;
       setTimeout(
         () => {
           // react-router wraps its own navigation state update in
@@ -26,10 +37,10 @@ export function Layout() {
             setIsExiting(false);
           });
         },
-        (TOTAL_EXIT_DURATION + WAIT_AFTER_EXIT) * 1000,
+        (exitDuration + WAIT_AFTER_EXIT) * 1000,
       );
     },
-    [navigate],
+    [navigate, location.pathname],
   );
 
   return (

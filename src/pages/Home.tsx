@@ -143,7 +143,7 @@ export function Home() {
   const projectsColumnBY = useTransform(projectsScrollProgress, [0, 1], [-120, 120]);
 
   // Reading order goes by vertical position (topmost first), not left/right
-  // column: Naya > ACPR > Design System OS > Voyage. "Area-2" and "Area" sit
+  // column: Naya > Presence Management > Design System OS > Voyage. "Area-2" and "Area" sit
   // at the top of the grid (visible on load), "Area-4" and "Area-3" sit
   // lower (revealed on scroll). Desktop additionally shifts "Area-3"/"Area-4"
   // one column to the right of their column-mate.

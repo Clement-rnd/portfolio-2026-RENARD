@@ -20,10 +20,15 @@ export interface NayaCoverHeroProps {
 // our own Squircle + CSS, so nothing is pre-baked against a mismatched
 // background the way a raster Figma export would be.
 const PHONES = [
-  { src: phoneSplash, leftPct: 31, widthPct: 18, rotate: -4 },
-  { src: phoneHome, leftPct: 50.34, widthPct: 18, rotate: 0 },
-  { src: phoneDetails, leftPct: 69.68, widthPct: 18, rotate: 4 },
+  { src: phoneSplash, leftPct: 31, rotate: -4 },
+  { src: phoneHome, leftPct: 50.34, rotate: 0 },
+  { src: phoneDetails, leftPct: 69.68, rotate: 4 },
 ];
+// Wider on mobile — the cover is much narrower there, so a fixed % of the
+// container width would render the screens too small to read. Sized to
+// intentionally overflow the bottom of the cover (clipped by its own
+// overflow-hidden) rather than shrink to fit.
+const WIDTH_CLASS = "w-[46%] md:w-[26%]";
 // Top edge of every phone sits at this fixed distance from the top of the
 // cover, regardless of screen size.
 const TOP_PCT = 15;
@@ -64,11 +69,10 @@ export function NayaCoverHero({
                   ease: "easeOut",
                 }
           }
-          className="absolute"
+          className={`absolute ${WIDTH_CLASS}`}
           style={{
             left: `${phone.leftPct}%`,
             top: `${TOP_PCT}%`,
-            width: `${phone.widthPct}%`,
             aspectRatio: "393 / 852",
             translate: "-50% 0%",
             rotate: `${phone.rotate}deg`,

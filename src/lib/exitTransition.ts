@@ -6,7 +6,7 @@
 // element is leaving.
 export const EXIT_DURATION = 0.4;
 export const EXIT_DISTANCE = 40;
-export const WAIT_AFTER_EXIT = 0.4;
+export const WAIT_AFTER_EXIT = 0.25;
 
 // The entrance sequence reveals bottom-to-top (e.g. the hero's own content
 // before the nav bar above it), so the exit deliberately goes the other way
@@ -34,3 +34,18 @@ const LAST_SECTION_DELAY =
     ? (Object.values(EXIT_SECTION_ORDER).length - 1) * EXIT_SECTION_STAGGER
     : 0;
 export const TOTAL_EXIT_DURATION = LAST_SECTION_DELAY + EXIT_DURATION;
+
+// ProjectPage.tsx has its own, much longer, per-section exit-delay ladder
+// (COVER_EXIT_DELAY = STAGGER * 1, ... up to this many tiers) since a
+// project page has far more sections than the home page's 5. It uses its
+// own, smaller stagger (rather than EXIT_SECTION_STAGGER) — with 16 tiers,
+// the home page's 0.08s step would make the last section (the one the user
+// is actually looking at when they click an outbound project card, since
+// it's at the bottom of the page) wait over a second before it even starts
+// fading. Layout needs the resulting total so it doesn't navigate away
+// before the last tier finishes — bump PROJECT_EXIT_TIER_COUNT if
+// ProjectPage.tsx gains another *_EXIT_DELAY tier.
+export const PROJECT_EXIT_SECTION_STAGGER = 0.02;
+export const PROJECT_EXIT_TIER_COUNT = 16;
+export const PROJECT_TOTAL_EXIT_DURATION =
+  PROJECT_EXIT_TIER_COUNT * PROJECT_EXIT_SECTION_STAGGER + EXIT_DURATION;

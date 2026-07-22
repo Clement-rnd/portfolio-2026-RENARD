@@ -31,6 +31,9 @@ export interface ProjectMeta {
   roles: string[];
   duration: string;
   tools: string[];
+  /** Shown as an "Équipe" column in the project page specs row, right
+   * after "Rôle" — optional, only some projects had a multi-person team. */
+  team?: string[];
 }
 
 export interface ProjectIntroCard {
@@ -78,6 +81,12 @@ export interface TargetUserPersona {
 export interface Project {
   slug: string;
   title: string;
+  /** Whether this project's portfolio page/card is finished and ready to
+   * show as clickable — distinct from the real-world project's own
+   * `status` ("En cours"/"Terminé"). Projects without a finished page
+   * still show as a disabled "Coming soon..." card even if the real
+   * project itself is done. */
+  isLive?: boolean;
   /** Shown on the home card as "Projet perso"/"Projet pro". */
   projectKind?: "personnel" | "professionnel";
   /** Shown on the home card next to projectKind, e.g. "6 mois". */
@@ -87,6 +96,11 @@ export interface Project {
   /** Image or video (.mp4/.webm) shown on the home project card. */
   coverImage?: string;
   tagline?: string;
+  /** Overrides the baseline heading's max-width (Tailwind class, e.g.
+   * "max-w-[40rem]") — defaults to "max-w-[56rem]" when unset. Use when the
+   * tagline's line breaks need a narrower/wider container to land where
+   * intended at the responsive clamp() font size. */
+  baselineMaxWidth?: string;
   meta?: ProjectMeta;
   intro?: {
     project: ProjectIntroCard;
@@ -192,6 +206,7 @@ export const projects: Project[] = [
   {
     slug: "naya",
     title: "Naya",
+    isLive: true,
     coverImage: nayaCover,
     tagline: "Prendre soin,\nsans stress",
     projectKind: "personnel",
@@ -450,33 +465,43 @@ export const projects: Project[] = [
     ],
   },
   {
-    slug: "acpr",
-    title: "ACPR",
-    tagline: "Outil de réclamation pour assureurs — projet d'alternance OS",
+    slug: "presence-management",
+    title: "Presence Management",
+    tagline: "Tous tes réseaux,\nune seule plateforme",
+    baselineMaxWidth: "max-w-[80rem]",
     projectKind: "professionnel",
     duration: "En cours",
     tags: [
       "UX/UI Design",
-      "Prototypage & Vibe coding",
-      "Collaboration stakeholders",
+      "Userflows",
+      "Collaboration cross-fonctionnelle",
+      "Handoff dev",
     ],
     meta: {
       roles: ["Product Designer"],
+      team: ["Designer", "Devs", "PO"],
       duration: "En cours",
       tools: ["Figma"],
     },
-    // Placeholder — à remplacer par le vrai type de projet.
-    overviewType: "À définir",
-    status: "En cours",
+    overviewType: "SaaS desktop",
+    status: "Terminé",
     // Placeholder — à remplacer par le vrai texte de présentation.
     context:
-      "Texte de présentation du projet à venir : contexte, objectifs, et périmètre d'ACPR.",
-    // Placeholder — à remplacer par la vraie cible/problématique.
+      "Texte de présentation du projet à venir : contexte, objectifs, et périmètre de Presence Management.",
     targetUsers:
-      "Description de la cible et de la problématique adressée par ACPR à venir.",
-    screens: [{ image: "" }, { image: "" }],
-    intro: DEFAULT_INTRO,
-    processSteps: DEFAULT_PROCESS_STEPS,
+      "Comment permettre aux utilisateurs de gérer tous leurs réseaux sociaux et avis clients depuis un seul endroit, sans perdre en simplicité ?",
+    intro: {
+      project: {
+        title: "Le projet",
+        description:
+          "Presence Management centralise la gestion de sa présence en ligne aussi bien les informations d'établissement que les publications, le tout depuis une seule interface. Un contenu créé une fois se diffuse partout ; les avis de chaque plateforme remontent au même endroit pour y répondre sans changer d'écran. L'objectif : faire gagner un temps précieux à ceux qui gèrent leur image en ligne au quotidien.",
+      },
+      context: {
+        title: "Contexte",
+        description:
+          "Le projet est né d'un besoin client concret : réunir dans un seul outil ce qui était jusque-là séparé. D'un côté, la gestion des avis et des questionnaires, déjà en place chez Opinion System. De l'autre, un vrai outil de gestion de présence en ligne, qui n'existait pas encore. L'objectif du client était simple ne plus jongler entre plusieurs outils, tout centraliser au même endroit.",
+      },
+    },
   },
   {
     slug: "design-system-os",

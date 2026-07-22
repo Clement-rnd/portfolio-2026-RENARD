@@ -23,7 +23,7 @@ function isVideo(src: string) {
 export function ProjectCard({ project }: ProjectCardProps) {
   const { navigateWithExit } = usePageTransition();
   const href = `/projects/${project.slug}`;
-  const isCompleted = project.status === "Terminé";
+  const isCompleted = project.isLive === true;
 
   return (
     <Link
@@ -52,32 +52,47 @@ export function ProjectCard({ project }: ProjectCardProps) {
               loop
               muted
               playsInline
-              className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+              className={`h-full w-full object-cover transition-transform duration-500 ease-out ${
+                isCompleted ? "group-hover:scale-105" : "grayscale"
+              }`}
             />
           ) : (
             <img
               src={project.coverImage}
               alt=""
-              className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+              className={`h-full w-full object-cover transition-transform duration-500 ease-out ${
+                isCompleted ? "group-hover:scale-105" : "grayscale"
+              }`}
             />
           ))
         )}
-        {isCompleted && (
-          <div className="absolute inset-0 hidden bg-black opacity-0 transition-opacity duration-300 ease-out md:block md:group-hover:opacity-[0.08]" />
+        {isCompleted ? (
+          <>
+            <div className="absolute inset-0 hidden bg-black opacity-0 transition-opacity duration-300 ease-out md:block md:group-hover:opacity-[0.08]" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Squircle
+                cornerRadius={8}
+                cornerSmoothing={1}
+                fill="var(--color-heading)"
+                borderWidth={0}
+                className="scale-90 opacity-0 transition-all duration-300 ease-out group-hover:scale-100 group-hover:opacity-100"
+              >
+                <span className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-white">
+                  Voir le projet
+                </span>
+              </Squircle>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="absolute inset-0 bg-black/20" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-sm font-medium text-white">
+                Coming soon...
+              </span>
+            </div>
+          </>
         )}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Squircle
-            cornerRadius={8}
-            cornerSmoothing={1}
-            fill="var(--color-heading)"
-            borderWidth={0}
-            className="scale-90 opacity-0 transition-all duration-300 ease-out group-hover:scale-100 group-hover:opacity-100"
-          >
-            <span className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-white">
-              {isCompleted ? "Voir le projet" : "Coming soon..."}
-            </span>
-          </Squircle>
-        </div>
       </Squircle>
 
       <div className="flex flex-col items-start gap-4">

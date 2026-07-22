@@ -35,7 +35,8 @@ import { usePageTransition } from "../lib/PageTransitionContext";
 import {
   EXIT_DISTANCE,
   EXIT_DURATION,
-  EXIT_SECTION_STAGGER,
+  PROJECT_EXIT_SECTION_STAGGER,
+  PROJECT_EXIT_TIER_COUNT,
 } from "../lib/exitTransition";
 import {
   PROJECT_BASELINE_CHAR_DURATION,
@@ -137,22 +138,23 @@ export function ProjectPage() {
     baselineText,
     project.title,
   );
-  const COVER_EXIT_DELAY = EXIT_SECTION_STAGGER;
-  const SPECS_EXIT_DELAY = EXIT_SECTION_STAGGER * 2;
-  const TIMELINE_EXIT_DELAY = EXIT_SECTION_STAGGER * 3;
-  const INTRO_EXIT_DELAY = EXIT_SECTION_STAGGER * 4;
-  const PERSONAS_EXIT_DELAY = EXIT_SECTION_STAGGER * 5;
-  const TARGET_USER_PERSONAS_EXIT_DELAY = EXIT_SECTION_STAGGER * 6;
-  const TARGET_USERS_EXIT_DELAY = EXIT_SECTION_STAGGER * 7;
-  const DA_EXIT_DELAY = EXIT_SECTION_STAGGER * 8;
-  const DA_CARD_EXIT_DELAY = EXIT_SECTION_STAGGER * 9;
-  const SITEMAP_EXIT_DELAY = EXIT_SECTION_STAGGER * 10;
-  const SCREENS_EXIT_DELAY = EXIT_SECTION_STAGGER * 11;
-  const DESIGN_SYSTEM_EXIT_DELAY = EXIT_SECTION_STAGGER * 12;
-  const KEY_DECISIONS_EXIT_DELAY = EXIT_SECTION_STAGGER * 13;
-  const USER_TESTING_EXIT_DELAY = EXIT_SECTION_STAGGER * 14;
-  const RETROSPECTIVE_EXIT_DELAY = EXIT_SECTION_STAGGER * 15;
-  const OTHER_PROJECTS_EXIT_DELAY = EXIT_SECTION_STAGGER * 16;
+  const COVER_EXIT_DELAY = PROJECT_EXIT_SECTION_STAGGER;
+  const SPECS_EXIT_DELAY = PROJECT_EXIT_SECTION_STAGGER * 2;
+  const TIMELINE_EXIT_DELAY = PROJECT_EXIT_SECTION_STAGGER * 3;
+  const INTRO_EXIT_DELAY = PROJECT_EXIT_SECTION_STAGGER * 4;
+  const PERSONAS_EXIT_DELAY = PROJECT_EXIT_SECTION_STAGGER * 5;
+  const TARGET_USER_PERSONAS_EXIT_DELAY = PROJECT_EXIT_SECTION_STAGGER * 6;
+  const TARGET_USERS_EXIT_DELAY = PROJECT_EXIT_SECTION_STAGGER * 7;
+  const DA_EXIT_DELAY = PROJECT_EXIT_SECTION_STAGGER * 8;
+  const DA_CARD_EXIT_DELAY = PROJECT_EXIT_SECTION_STAGGER * 9;
+  const SITEMAP_EXIT_DELAY = PROJECT_EXIT_SECTION_STAGGER * 10;
+  const SCREENS_EXIT_DELAY = PROJECT_EXIT_SECTION_STAGGER * 11;
+  const DESIGN_SYSTEM_EXIT_DELAY = PROJECT_EXIT_SECTION_STAGGER * 12;
+  const KEY_DECISIONS_EXIT_DELAY = PROJECT_EXIT_SECTION_STAGGER * 13;
+  const USER_TESTING_EXIT_DELAY = PROJECT_EXIT_SECTION_STAGGER * 14;
+  const RETROSPECTIVE_EXIT_DELAY = PROJECT_EXIT_SECTION_STAGGER * 15;
+  const OTHER_PROJECTS_EXIT_DELAY =
+    PROJECT_EXIT_SECTION_STAGGER * PROJECT_EXIT_TIER_COUNT;
   const targetUsersRef = useRef(null);
   const isTargetUsersInView = useInView(targetUsersRef, {
     once: true,
@@ -242,7 +244,9 @@ export function ProjectPage() {
           duration={PROJECT_TITLE_CHAR_DURATION}
           className="text-[1.25rem] font-medium uppercase tracking-widest text-body"
         />
-        <h1 className="max-w-[56rem] font-casta font-medium leading-[0.8] text-[3rem] text-heading lg:text-[clamp(3rem,6vw,7rem)]">
+        <h1
+          className={`${project.baselineMaxWidth ?? "max-w-[56rem]"} font-casta font-medium leading-[0.8] text-[3rem] text-heading lg:text-[clamp(3rem,6vw,7rem)]`}
+        >
           <RevealChars
             text={baselineText}
             trigger={true}
@@ -315,14 +319,26 @@ export function ProjectPage() {
               </p>
             </motion.div>
           )}
-          {project.tags.length > 0 && (
+          {project.meta?.team && project.meta.team.length > 0 && (
             <motion.div {...specsRevealProps(3)} className="flex flex-col gap-2">
+              <h6 className={overviewLabelClassName}>Équipe</h6>
+              <div className="flex flex-col gap-2">
+                {project.meta.team.map((member) => (
+                  <p key={member} className={overviewValueClassName}>
+                    {member}
+                  </p>
+                ))}
+              </div>
+            </motion.div>
+          )}
+          {project.tags.length > 0 && (
+            <motion.div {...specsRevealProps(4)} className="flex flex-col gap-2">
               <h6 className={overviewLabelClassName}>Compétences</h6>
               <div className="flex flex-col gap-2">
                 {project.tags.map((tag, index) => (
                   <motion.p
                     key={tag}
-                    {...specsRevealProps(4 + index)}
+                    {...specsRevealProps(5 + index)}
                     className={overviewValueClassName}
                   >
                     {tag}
@@ -333,18 +349,24 @@ export function ProjectPage() {
           )}
           {project.status && (
             <motion.div
-              {...specsRevealProps(4 + project.tags.length)}
+              {...specsRevealProps(5 + project.tags.length)}
               className="flex flex-col gap-2"
             >
               <h6 className={overviewLabelClassName}>Statut</h6>
               <Squircle
                 cornerRadius={8}
                 cornerSmoothing={1}
-                fill="#E4E1FB"
+                fill={project.status === "Terminé" ? "#DBEAFE" : "#E4E1FB"}
                 borderWidth={0}
                 className="self-start"
               >
-                <span className="inline-flex items-center px-3.5 py-1.5 text-base font-medium text-[#4338CA]">
+                <span
+                  className={`inline-flex items-center px-3.5 py-1.5 text-base font-medium ${
+                    project.status === "Terminé"
+                      ? "text-[#1D4ED8]"
+                      : "text-[#4338CA]"
+                  }`}
+                >
                   {project.status}
                 </span>
               </Squircle>
@@ -675,7 +697,15 @@ export function ProjectPage() {
       )}
 
       <section id="projets" className="flex flex-col gap-6 py-24">
-        <h2 className={sectionTitleClassName}>Voir d'autres projets</h2>
+        <AnimatedHeading
+          text="Voir d'autres projets"
+          as="h2"
+          stagger={SECTION_TITLE_STAGGER}
+          duration={SECTION_TITLE_DURATION}
+          exiting={isExiting}
+          exitDelay={OTHER_PROJECTS_EXIT_DELAY}
+          className={animatedSectionTitleClassName}
+        />
         <div className="grid grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-3">
           {otherProjects.map((otherProject, index) => (
             <motion.div

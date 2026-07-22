@@ -28,7 +28,9 @@ const PHONES = [
   },
 ];
 
-const WIDTH_PCT = 18;
+// Wider on mobile — the card is much narrower there, so a fixed % of the
+// container width would render the screens too small to read.
+const WIDTH_CLASS = "w-[34%] md:w-[18%]";
 // Top edge of every phone sits at this fixed distance from the top of the
 // card cover, regardless of screen size.
 const TOP_PCT = 15;
@@ -39,11 +41,10 @@ export function NayaCardCover() {
       {PHONES.map((phone) => (
         <div
           key={phone.src}
-          className={`absolute transition-transform duration-500 ease-out ${phone.className}`}
+          className={`absolute transition-transform duration-500 ease-out ${WIDTH_CLASS} ${phone.className}`}
           style={{
             left: `${phone.leftPct}%`,
             top: `${TOP_PCT}%`,
-            width: `${WIDTH_PCT}%`,
             aspectRatio: "393 / 852",
             transform:
               "translate(calc(-50% + var(--fan)), 0%) rotate(var(--tilt))",
